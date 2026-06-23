@@ -88,7 +88,7 @@
 
 .editor-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 420px) 1fr;
+  grid-template-columns: minmax(320px, 480px) 1fr;
   gap: 0;
   min-height: calc(100dvh - 57px);
 }
@@ -145,6 +145,15 @@
   background: #fff;
 }
 
+.move-category-select {
+  font: inherit;
+  font-size: 10px;
+  width: 100%;
+  padding: 4px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
 .move-btns {
   display: flex;
   flex-direction: column;
@@ -169,9 +178,17 @@
   opacity: 0.25;
 }
 
+.section-tools label,
+.section-tools .move-label {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #666;
+}
+
 .struct-row {
   display: grid;
-  grid-template-columns: 72px 1fr 72px 32px;
+  grid-template-columns: 72px 1fr 64px 28px 108px;
   gap: 6px;
   margin-bottom: 6px;
   align-items: start;
@@ -184,7 +201,7 @@
 }
 
 .struct-row-spacer {
-  grid-template-columns: 72px 1fr;
+  grid-template-columns: 72px 1fr 108px;
 }
 
 .struct-row textarea.name-input {

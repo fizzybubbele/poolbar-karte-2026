@@ -6,7 +6,7 @@ import {
   updateItem,
   updateFooter,
   moveSection,
-  moveItemInSection,
+  moveItem,
   updateSection,
 } from './parser.js';
 import {
@@ -186,6 +186,12 @@ function renderStructuredEditor() {
 
     const tools = document.createElement('div');
     tools.className = 'section-tools';
+
+    const moveLabel = document.createElement('span');
+    moveLabel.className = 'move-label';
+    moveLabel.textContent = 'Kat.';
+    tools.appendChild(moveLabel);
+
     tools.appendChild(createMoveButtons({
       canUp: sectionIndex > 0,
       canDown: sectionIndex < currentMenu.sections.length - 1,
@@ -214,8 +220,8 @@ function renderStructuredEditor() {
       controls.appendChild(createMoveButtons({
         canUp: index > 0,
         canDown: index < section.items.length - 1,
-        onUp: () => pushState(moveItemInSection(currentMenu, section.title, index, index - 1)),
-        onDown: () => pushState(moveItemInSection(currentMenu, section.title, index, index + 1)),
+        onUp: () => pushState(moveItem(currentMenu, sectionIndex, index, sectionIndex, index - 1)),
+        onDown: () => pushState(moveItem(currentMenu, sectionIndex, index, sectionIndex, index + 1)),
       }));
 
       const remove = document.createElement('button');
@@ -233,6 +239,7 @@ function renderStructuredEditor() {
         label.className = 'spacer-label';
         label.textContent = 'Leerzeile';
         row.appendChild(label);
+        row.appendChild(createCategoryMoveSelect(sectionIndex, index));
         block.appendChild(row);
         return;
       }
@@ -271,6 +278,7 @@ function renderStructuredEditor() {
       row.appendChild(name);
       row.appendChild(price);
       row.appendChild(noteBtn);
+      row.appendChild(createCategoryMoveSelect(sectionIndex, index));
       block.appendChild(row);
     });
 
@@ -574,9 +582,6 @@ function setStatus(msg, isError = false) {
   statusBar.classList.toggle('error', isError);
 }
 
-/**
- * @param {{ canUp: boolean, canDown: boolean, onUp: () => void, onDown: () => void }} opts
- */
 function createMoveButtons(opts) {
   const wrap = document.createElement('div');
   wrap.className = 'move-btns';
@@ -603,6 +608,39 @@ function createMoveButtons(opts) {
   wrap.appendChild(up);
   wrap.appendChild(down);
   return wrap;
+}
+
+/** @param {number} sectionIndex @param {number} itemIndex */
+function createCategoryMoveSelect(sectionIndex, itemIndex) {
+  const select = document.createElement('select');
+  select.className = 'move-category-select';
+  select.title = 'In andere Kategorie verschieben';
+
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = '→ Kat.';
+  select.appendChild(placeholder);
+
+  if (!currentMenu) return select;
+
+  currentMenu.sections.forEach((sec, targetIndex) => {
+    if (targetIndex === sectionIndex) return;
+    const opt = document.createElement('option');
+    opt.value = String(targetIndex);
+    opt.textContent = sec.title.length > 22 ? `${sec.title.slice(0, 20)}…` : sec.title;
+    select.appendChild(opt);
+  });
+
+  select.addEventListener('change', () => {
+    if (!currentMenu || !select.value) return;
+    const targetIndex = Number(select.value);
+    const targetSection = currentMenu.sections[targetIndex];
+    if (!targetSection) return;
+    pushState(moveItem(currentMenu, sectionIndex, itemIndex, targetIndex, targetSection.items.length));
+    select.value = '';
+  });
+
+  return select;
 }
 
 async function sha256(text) {

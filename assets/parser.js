@@ -170,18 +170,38 @@ export function moveSection(menu, fromIndex, toIndex) {
 
 /**
  * @param {import('./karte.js').MenuData} menu
+ * @param {number} fromSectionIndex
+ * @param {number} fromItemIndex
+ * @param {number} toSectionIndex
+ * @param {number} toItemIndex
+ */
+export function moveItem(menu, fromSectionIndex, fromItemIndex, toSectionIndex, toItemIndex) {
+  const next = structuredClone(menu);
+  const fromSec = next.sections[fromSectionIndex];
+  const toSec = next.sections[toSectionIndex];
+  if (!fromSec || !toSec) return next;
+  if (fromItemIndex < 0 || fromItemIndex >= fromSec.items.length) return next;
+
+  const [item] = fromSec.items.splice(fromItemIndex, 1);
+  let insertAt = Math.max(0, Math.min(toItemIndex, toSec.items.length));
+  toSec.items.splice(insertAt, 0, item);
+
+  if (fromSec.items.length === 0) {
+    next.sections.splice(fromSectionIndex, 1);
+  }
+  return next;
+}
+
+/**
+ * @param {import('./karte.js').MenuData} menu
  * @param {string} sectionTitle
  * @param {number} fromIndex
  * @param {number} toIndex
  */
 export function moveItemInSection(menu, sectionTitle, fromIndex, toIndex) {
-  const next = structuredClone(menu);
-  const sec = next.sections.find((s) => s.title === sectionTitle);
-  if (!sec || fromIndex === toIndex) return next;
-  if (fromIndex < 0 || toIndex < 0 || fromIndex >= sec.items.length || toIndex >= sec.items.length) return next;
-  const [item] = sec.items.splice(fromIndex, 1);
-  sec.items.splice(toIndex, 0, item);
-  return next;
+  const sectionIndex = menu.sections.findIndex((s) => s.title === sectionTitle);
+  if (sectionIndex < 0) return menu;
+  return moveItem(menu, sectionIndex, fromIndex, sectionIndex, toIndex);
 }
 
 /**
