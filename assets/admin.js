@@ -580,11 +580,13 @@ function setStatus(msg, isError = false) {
 function createMoveButtons(opts) {
   const wrap = document.createElement('div');
   wrap.className = 'move-btns';
+  wrap.title = 'Reihenfolge ändern';
 
   const up = document.createElement('button');
   up.type = 'button';
   up.className = 'move-btn';
   up.textContent = '↑';
+  up.setAttribute('aria-label', 'Nach oben');
   up.title = 'Nach oben';
   up.disabled = !opts.canUp;
   up.addEventListener('click', opts.onUp);
@@ -593,6 +595,7 @@ function createMoveButtons(opts) {
   down.type = 'button';
   down.className = 'move-btn';
   down.textContent = '↓';
+  down.setAttribute('aria-label', 'Nach unten');
   down.title = 'Nach unten';
   down.disabled = !opts.canDown;
   down.addEventListener('click', opts.onDown);

@@ -149,14 +149,20 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding: 3px;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  background: #f8f8f8;
 }
 
 .move-btn {
-  padding: 2px 6px !important;
-  font-size: 11px;
+  padding: 4px 8px !important;
+  min-width: 28px;
+  font-size: 12px;
   line-height: 1;
   background: #fff !important;
   color: #000 !important;
+  font-weight: 700;
 }
 
 .move-btn:disabled {
@@ -165,7 +171,7 @@
 
 .struct-row {
   display: grid;
-  grid-template-columns: 56px 1fr 72px 32px;
+  grid-template-columns: 72px 1fr 72px 32px;
   gap: 6px;
   margin-bottom: 6px;
   align-items: start;
@@ -178,7 +184,7 @@
 }
 
 .struct-row-spacer {
-  grid-template-columns: 56px 1fr;
+  grid-template-columns: 72px 1fr;
 }
 
 .struct-row textarea.name-input {
