@@ -17,7 +17,16 @@ Passwort (Standard): `poolbar2026` — bitte nach Ersteinrichtung ändern (Hash 
 - **Fußzeile:** Texte links/rechts/Pfand — Enter für Zeilenumbrüche
 - **Verlauf:** Rückgängig/Wiederholen + gespeicherte Snapshots
 - **Reset:** lädt `data/baseline/menu.json` (offizieller Tagesstand)
-- **Veröffentlichen:** GitHub PAT (repo Contents write) in Admin speichern, oder lokal `./scripts/publish-menu.sh`
+- **Veröffentlichen:** GitHub PAT mit **Contents: Read and write** auf `fizzybubbele/poolbar-karte-2026` — im Admin einfügen, **PAT speichern** (testet Token), dann **Veröffentlichen**. Alternativ lokal: `./scripts/publish-menu.sh`
+
+### GitHub PAT anlegen
+
+1. https://github.com/settings/tokens → **Fine-grained token** (empfohlen) oder Classic
+2. Repository: **fizzybubbele/poolbar-karte-2026**
+3. Permission: **Contents → Read and write**
+4. Token kopieren (`ghp_…` oder `github_pat_…`), im Admin einfügen → **PAT speichern**
+
+Bei **Bad credentials**: Token abgelaufen oder falsch — neues PAT, **PAT löschen**, neu speichern.
 
 ### Passwort ändern
 

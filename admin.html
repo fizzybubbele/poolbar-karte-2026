@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Poolbar Karte — Admin</title>
-  <link rel="stylesheet" href="assets/karte.css?v=6">
-  <link rel="stylesheet" href="assets/admin.css?v=6">
+  <link rel="stylesheet" href="assets/karte.css?v=7">
+  <link rel="stylesheet" href="assets/admin.css?v=7">
 </head>
 <body class="admin-body">
   <div id="login-view" class="login-view is-active">
@@ -63,8 +63,12 @@
 
         <section>
           <h2>Veröffentlichen</h2>
-          <input id="pat-input" type="password" placeholder="GitHub PAT (optional)">
-          <button type="button" id="save-pat-btn">PAT speichern</button>
+          <p class="muted editor-hint">GitHub → Settings → Developer settings → Personal access tokens. Repo <strong>poolbar-karte-2026</strong>, Recht <strong>Contents: Read and write</strong>.</p>
+          <input id="pat-input" type="password" placeholder="GitHub PAT einfügen" autocomplete="off">
+          <div class="publish-actions">
+            <button type="button" id="save-pat-btn">PAT speichern</button>
+            <button type="button" id="clear-pat-btn">PAT löschen</button>
+          </div>
           <div class="publish-actions">
             <button type="button" id="export-btn">JSON exportieren</button>
             <button type="button" id="publish-btn">Veröffentlichen</button>
@@ -99,6 +103,6 @@
       e.preventDefault();
     });
   </script>
-  <script type="module" src="assets/admin.js?v=6"></script>
+  <script type="module" src="assets/admin.js?v=7"></script>
 </body>
 </html>

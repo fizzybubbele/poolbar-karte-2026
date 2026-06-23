@@ -49,6 +49,7 @@ const exportBtn = document.getElementById('export-btn');
 const publishBtn = document.getElementById('publish-btn');
 const patInput = document.getElementById('pat-input');
 const savePatBtn = document.getElementById('save-pat-btn');
+const clearPatBtn = document.getElementById('clear-pat-btn');
 const pdfPreviewBtn = document.getElementById('pdf-preview-btn');
 const pdfLiveLink = document.getElementById('pdf-live-link');
 const statusBar = document.getElementById('status-bar');
@@ -94,11 +95,10 @@ function init() {
   resetBtn?.addEventListener('click', resetToBaseline);
   exportBtn?.addEventListener('click', exportJson);
   publishBtn?.addEventListener('click', publishMenu);
-  savePatBtn?.addEventListener('click', () => {
-    if (!patInput) return;
-    const val = patInput.value.trim();
-    if (val && val !== '••••••••') sessionStorage.setItem(PAT_KEY, val);
-    setStatus('PAT für diese Sitzung gespeichert');
+  savePatBtn?.addEventListener('click', () => void savePat());
+  clearPatBtn?.addEventListener('click', () => {
+    clearPat();
+    setStatus('Gespeichertes PAT entfernt');
   });
 
   footerLeftInput?.addEventListener('change', syncFooterFromInputs);
@@ -371,28 +371,85 @@ function downloadPdfPreview() {
 
 async function publishMenu() {
   if (!currentMenu) return;
-  const pat = sessionStorage.getItem(PAT_KEY);
+  const pat = getPat();
   if (!pat) {
-    setStatus('GitHub PAT fehlt — exportiere JSON oder PAT speichern', true);
-    exportJson();
+    setStatus('GitHub PAT fehlt — Token einfügen, „PAT speichern“, dann erneut veröffentlichen', true);
     return;
   }
 
   const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 16);
   const historyPath = `data/history/menu-${stamp}.json`;
-  const menuJson = JSON.stringify(currentMenu, null, 2);
+  const menuToPublish = cloneMenu(currentMenu);
+  menuToPublish.meta = { ...menuToPublish.meta, updated: new Date().toISOString().slice(0, 10) };
+  const menuJson = JSON.stringify(menuToPublish, null, 2);
 
   try {
     publishBtn.disabled = true;
+    await validatePat(pat);
+    storePat(pat);
     await upsertFile(pat, 'data/menu.json', menuJson, 'Karte aktualisiert');
     await upsertFile(pat, historyPath, menuJson, `Snapshot ${stamp}`, false);
     await appendHistoryIndex(pat, historyPath, stamp);
-    setStatus('Veröffentlicht — Deploy läuft auf GitHub');
+    pushState(menuToPublish);
+    setStatus('Veröffentlicht — Deploy läuft auf GitHub (~1–2 Min.)');
     await loadHistoryList();
   } catch (err) {
     setStatus(err.message, true);
   } finally {
     publishBtn.disabled = false;
+  }
+}
+
+function readPatFromInput() {
+  const raw = patInput?.value?.trim() || '';
+  if (!raw || raw === '••••••••') return '';
+  return raw;
+}
+
+function getPat() {
+  const fromInput = readPatFromInput();
+  if (fromInput) return fromInput;
+  return sessionStorage.getItem(PAT_KEY)?.trim() || '';
+}
+
+function storePat(pat) {
+  sessionStorage.setItem(PAT_KEY, pat.trim());
+  if (patInput) patInput.value = '••••••••';
+}
+
+function clearPat() {
+  sessionStorage.removeItem(PAT_KEY);
+  if (patInput) patInput.value = '';
+}
+
+async function savePat() {
+  const pat = readPatFromInput();
+  if (!pat) {
+    setStatus('GitHub PAT einfügen (ghp_… oder github_pat_…)', true);
+    return;
+  }
+  try {
+    savePatBtn.disabled = true;
+    await validatePat(pat);
+    storePat(pat);
+    setStatus('PAT gespeichert und geprüft');
+  } catch (err) {
+    clearPat();
+    setStatus(err.message, true);
+  } finally {
+    savePatBtn.disabled = false;
+  }
+}
+
+async function validatePat(pat) {
+  await githubApi(pat, '/user');
+  try {
+    await githubApi(pat, `/repos/${GITHUB_REPO}`);
+  } catch (err) {
+    if (String(err.message).includes('404')) {
+      throw new Error(`Kein Zugriff auf ${GITHUB_REPO} — Repo im PAT freigeben`);
+    }
+    throw err;
   }
 }
 
@@ -440,7 +497,7 @@ async function upsertFile(pat, path, content, message, tryUpdateMain = true) {
   let sha;
   if (tryUpdateMain) {
     try {
-      const meta = await githubApi(pat, `/repos/${GITHUB_REPO}/contents/${path}`);
+      const meta = await githubApi(pat, repoContentsPath(path));
       sha = meta.sha;
     } catch {
       sha = undefined;
@@ -451,21 +508,27 @@ async function upsertFile(pat, path, content, message, tryUpdateMain = true) {
     content: toBase64(content),
   };
   if (sha) body.sha = sha;
-  await githubApi(pat, `/repos/${GITHUB_REPO}/contents/${path}`, 'PUT', body);
+  await githubApi(pat, repoContentsPath(path), 'PUT', body);
 }
 
 async function githubGet(pat, path) {
-  const data = await githubApi(pat, `/repos/${GITHUB_REPO}/contents/${path}`);
+  const data = await githubApi(pat, repoContentsPath(path));
   const binary = atob(data.content.replace(/\n/g, ''));
   const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
   return new TextDecoder().decode(bytes);
 }
 
+/** @param {string} filePath */
+function repoContentsPath(filePath) {
+  return `/repos/${GITHUB_REPO}/contents/${filePath.split('/').map(encodeURIComponent).join('/')}`;
+}
+
 async function githubApi(pat, path, method = 'GET', body) {
+  const token = pat.trim();
   const res = await fetch(`https://api.github.com${path}`, {
     method,
     headers: {
-      Authorization: `Bearer ${pat}`,
+      Authorization: `Bearer ${token}`,
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
     },
@@ -473,7 +536,15 @@ async function githubApi(pat, path, method = 'GET', body) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `GitHub API ${res.status}`);
+    const msg = err.message || `GitHub API ${res.status}`;
+    if (res.status === 401) {
+      clearPat();
+      throw new Error('GitHub-Token ungültig oder abgelaufen. Neues PAT erstellen, speichern, erneut versuchen.');
+    }
+    if (res.status === 403) {
+      throw new Error('Kein Schreibrecht — PAT braucht „Contents: Read and write“ für poolbar-karte-2026');
+    }
+    throw new Error(msg);
   }
   return res.json();
 }
