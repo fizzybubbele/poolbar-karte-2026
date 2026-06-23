@@ -102,7 +102,9 @@ function init() {
 
 async function showEditor() {
   loginView.hidden = true;
+  loginView.style.display = 'none';
   editorView.hidden = false;
+  editorView.style.removeProperty('display');
   try {
     const menu = await loadMenu(MENU_URL);
     currentMenu = menu;
