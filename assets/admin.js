@@ -180,9 +180,20 @@ function renderStructuredEditor() {
     const head = document.createElement('div');
     head.className = 'struct-section-head';
 
-    const h = document.createElement('h3');
-    h.textContent = section.title;
-    head.appendChild(h);
+    const titleInput = document.createElement('input');
+    titleInput.className = 'section-title-input';
+    titleInput.value = section.title;
+    titleInput.placeholder = 'Kategoriename';
+    titleInput.addEventListener('change', () => {
+      const nextTitle = titleInput.value.trim();
+      if (!nextTitle) {
+        titleInput.value = section.title;
+        return;
+      }
+      if (nextTitle === section.title) return;
+      pushState(updateSection(currentMenu, sectionIndex, { title: nextTitle }));
+    });
+    head.appendChild(titleInput);
 
     const tools = document.createElement('div');
     tools.className = 'section-tools';

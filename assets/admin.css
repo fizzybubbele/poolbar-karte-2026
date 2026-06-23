@@ -123,6 +123,17 @@
   margin-bottom: 8px;
 }
 
+.section-title-input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
 .struct-section-head h3 {
   margin: 0;
   flex: 1;
