@@ -105,9 +105,71 @@
 
 .struct-row {
   display: grid;
-  grid-template-columns: 28px 1fr 72px;
+  grid-template-columns: 28px 1fr 72px 32px;
   gap: 6px;
   margin-bottom: 6px;
+  align-items: start;
+}
+
+.struct-row-spacer {
+  grid-template-columns: 28px 1fr;
+}
+
+.struct-row textarea.name-input {
+  width: 100%;
+  min-height: 2.8em;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  resize: vertical;
+  font: inherit;
+}
+
+.struct-row .note-toggle {
+  padding: 4px;
+  background: #fff;
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.struct-row .note-toggle.is-active {
+  background: #000;
+  color: #fff;
+}
+
+.spacer-label {
+  color: #888;
+  font-size: 12px;
+  padding: 8px 0;
+}
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.editor-hint {
+  margin: -4px 0 12px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.field-label {
+  display: block;
+  margin: 10px 0 4px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.editor-panel textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  font: inherit;
+  resize: vertical;
 }
 
 .struct-row button {
@@ -153,11 +215,60 @@
   overflow: auto;
 }
 
-.preview-panel h2 {
+.preview-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.preview-toolbar h2 {
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-bottom: 12px;
+  margin: 0;
+}
+
+.preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preview-actions .download-btn {
+  display: inline-block;
+  padding: 10px 16px;
+  background: #000;
+  color: #fff;
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid #000;
+  cursor: pointer;
+}
+
+.preview-actions .download-btn:hover {
+  background: #fff;
+  color: #000;
+}
+
+.preview-actions .download-btn-secondary {
+  background: #fff;
+  color: #000;
+}
+
+.preview-actions .download-btn-secondary:hover {
+  background: #000;
+  color: #fff;
+}
+
+.preview-hint {
+  margin: 0 0 12px;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 .preview-viewport {

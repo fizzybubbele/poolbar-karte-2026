@@ -12,8 +12,8 @@ Passwort (Standard): `poolbar2026` — bitte nach Ersteinrichtung ändern (Hash 
 
 ### Funktionen
 
-- **Freitext:** z. B. `Radler weg`, `Aperol Spritz 8,50 dazu`, `neu in Beefeater Gin: Pink Gin 8,90`
-- **Strukturiert:** Zeilen bearbeiten, entfernen, hinzufügen
+- **Karte bearbeiten:** Namen/Preise, Enter für Zeilenumbrüche, Leerzeilen, Hinweiszeilen
+- **Fußzeile:** Texte links/rechts/Pfand — Enter für Zeilenumbrüche
 - **Verlauf:** Rückgängig/Wiederholen + gespeicherte Snapshots
 - **Reset:** lädt `data/baseline/menu.json` (offizieller Tagesstand)
 - **Veröffentlichen:** GitHub PAT (repo Contents write) in Admin speichern, oder lokal `./scripts/publish-menu.sh`

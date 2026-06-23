@@ -22,10 +22,26 @@
   </div>
   <script type="module">
     import { renderKarte, loadMenu } from './assets/karte.js';
-    loadMenu('data/menu.json').then((menu) => {
+
+    const params = new URLSearchParams(location.search);
+    const autoPrint = params.get('print') === '1';
+
+    async function getMenu() {
+      if (params.get('preview') === '1') {
+        const raw = sessionStorage.getItem('poolbar-print-menu');
+        if (raw) return JSON.parse(raw);
+      }
+      return loadMenu('data/menu.json');
+    }
+
+    getMenu().then((menu) => {
       renderKarte(menu, document.getElementById('karte-root'));
-      document.fonts.ready.then(() => {
+      Promise.all([
+        document.fonts.ready,
+        new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+      ]).then(() => {
         document.body.dataset.ready = '1';
+        if (autoPrint) window.print();
       });
     });
   </script>

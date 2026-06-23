@@ -125,12 +125,31 @@ export function addItemToSection(menu, sectionTitle, item) {
  * @param {import('./karte.js').MenuData} menu
  * @param {string} sectionTitle
  * @param {number} itemIndex
- * @param {{ name?: string, price?: string }} patch
+ * @param {{ name?: string, price?: string, note?: boolean, spacer?: boolean }} patch
  */
 export function updateItem(menu, sectionTitle, itemIndex, patch) {
   const next = structuredClone(menu);
   const sec = next.sections.find((s) => s.title === sectionTitle);
   if (!sec || !sec.items[itemIndex]) return next;
   Object.assign(sec.items[itemIndex], patch);
+  if (patch.note) {
+    sec.items[itemIndex].price = '';
+    sec.items[itemIndex].spacer = false;
+  }
+  if (patch.spacer) {
+    sec.items[itemIndex].name = '';
+    sec.items[itemIndex].price = '';
+    sec.items[itemIndex].note = false;
+  }
+  return next;
+}
+
+/**
+ * @param {import('./karte.js').MenuData} menu
+ * @param {{ left?: string, right?: string, pfand?: string }} patch
+ */
+export function updateFooter(menu, patch) {
+  const next = structuredClone(menu);
+  Object.assign(next.footer, patch);
   return next;
 }

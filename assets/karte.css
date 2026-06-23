@@ -100,8 +100,9 @@ body {
   gap: 10px;
 }
 
-.row-name { flex: 1; min-width: 0; line-height: 1.4; }
+.row-name { flex: 1; min-width: 0; line-height: 1.4; white-space: pre-line; }
 .row-name.note { font-size: 10px; }
+.row-spacer { height: 10px; padding: 0; }
 .row-price { white-space: nowrap; flex-shrink: 0; font-variant-numeric: tabular-nums; }
 
 .footer {
@@ -114,7 +115,9 @@ body {
   gap: 12px;
 }
 
-.pfand { font-size: 13px; margin-top: 6px; }
+.footer-text { white-space: pre-line; }
+
+.pfand { font-size: 13px; margin-top: 6px; white-space: pre-line; }
 
 .screen-hint {
   margin-top: 12px;

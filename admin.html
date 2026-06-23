@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Poolbar Karte — Admin</title>
-  <link rel="stylesheet" href="assets/karte.css?v=4525da8">
-  <link rel="stylesheet" href="assets/admin.css?v=4525da8">
+  <link rel="stylesheet" href="assets/karte.css?v=4">
+  <link rel="stylesheet" href="assets/admin.css?v=4">
 </head>
 <body class="admin-body">
   <div id="login-view" class="login-view">
@@ -28,15 +28,19 @@
     <div class="editor-grid">
       <aside class="editor-panel">
         <section>
-          <h2>Freitext</h2>
-          <textarea id="freetext-input" rows="5" placeholder="Radler weg&#10;Aperol Spritz 8,50 dazu&#10;neu in Beefeater Gin: Pink Gin 8,90"></textarea>
-          <button type="button" id="freetext-apply">Anwenden</button>
-          <p id="freetext-messages" class="muted"></p>
+          <h2>Karte bearbeiten</h2>
+          <p class="muted editor-hint">Enter = Zeilenumbruch · „Leerzeile“ = Abstand · „Hinweis“ = kleinere Schrift ohne Preis</p>
+          <div id="structured-root"></div>
         </section>
 
         <section>
-          <h2>Strukturiert</h2>
-          <div id="structured-root"></div>
+          <h2>Fußzeile</h2>
+          <label class="field-label" for="footer-left">Links</label>
+          <textarea id="footer-left" rows="2"></textarea>
+          <label class="field-label" for="footer-right">Rechts</label>
+          <textarea id="footer-right" rows="2"></textarea>
+          <label class="field-label" for="footer-pfand">Pfand</label>
+          <textarea id="footer-pfand" rows="2"></textarea>
         </section>
 
         <section>
@@ -63,7 +67,14 @@
       </aside>
 
       <main class="preview-panel">
-        <h2>Vorschau</h2>
+        <div class="preview-toolbar">
+          <h2>Vorschau</h2>
+          <div class="preview-actions">
+            <button type="button" id="pdf-preview-btn" class="download-btn">PDF herunterladen</button>
+            <a id="pdf-live-link" class="download-btn download-btn-secondary" href="poolbar_getraenkekarte_2026.pdf" download="poolbar_getraenkekarte_2026.pdf">PDF (live)</a>
+          </div>
+        </div>
+        <p class="muted preview-hint">Aktuelle Vorschau → Druckdialog → „Als PDF speichern“. „PDF (live)“ = veröffentlichte Datei.</p>
         <div class="a4-viewport preview-viewport">
           <div class="a4-sheet">
             <div class="a4-page">
@@ -80,6 +91,6 @@
       e.preventDefault();
     });
   </script>
-  <script type="module" src="assets/admin.js?v=4525da8"></script>
+  <script type="module" src="assets/admin.js?v=4"></script>
 </body>
 </html>

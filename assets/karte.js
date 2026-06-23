@@ -1,4 +1,4 @@
-/** @typedef {{ name: string, price?: string, note?: boolean }} MenuItem */
+/** @typedef {{ name: string, price?: string, note?: boolean, spacer?: boolean }} MenuItem */
 /** @typedef {{ title: string, column: 'left'|'right', items: MenuItem[] }} MenuSection */
 /** @typedef {{ meta: object, logoSvg: string, headerRight: string, footer: { left: string, right: string, pfand: string }, sections: MenuSection[] }} MenuData */
 
@@ -7,6 +7,13 @@
  * @returns {HTMLDivElement}
  */
 function createRow(item) {
+  if (item.spacer) {
+    const row = document.createElement('div');
+    row.className = 'row row-spacer';
+    row.setAttribute('aria-hidden', 'true');
+    return row;
+  }
+
   const row = document.createElement('div');
   row.className = 'row';
   if (item.note) row.style.marginTop = '3px';
@@ -80,8 +87,10 @@ export function renderKarte(menu, container) {
   const footer = document.createElement('div');
   footer.className = 'footer';
   const footerLeft = document.createElement('span');
+  footerLeft.className = 'footer-text';
   footerLeft.textContent = menu.footer.left;
   const footerRight = document.createElement('span');
+  footerRight.className = 'footer-text';
   footerRight.textContent = menu.footer.right;
   footer.appendChild(footerLeft);
   footer.appendChild(footerRight);

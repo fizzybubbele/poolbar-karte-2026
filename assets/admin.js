@@ -1,9 +1,9 @@
 import { renderKarte, loadMenu, cloneMenu } from './karte.js';
 import {
-  applyFreetext,
   removeItemAt,
   addItemToSection,
   updateItem,
+  updateFooter,
 } from './parser.js';
 import {
   ADMIN_PASSWORD_HASH,
@@ -16,6 +16,7 @@ import {
 const AUTH_KEY = 'poolbar-admin-auth';
 const PAT_KEY = 'poolbar-github-pat';
 const UNDO_KEY = 'poolbar-admin-undo';
+const PRINT_MENU_KEY = 'poolbar-print-menu';
 
 /** @type {import('./karte.js').MenuData | null} */
 let currentMenu = null;
@@ -30,9 +31,9 @@ const loginForm = document.getElementById('login-form');
 const loginError = document.getElementById('login-error');
 const previewRoot = document.getElementById('preview-root');
 const structuredRoot = document.getElementById('structured-root');
-const freetextInput = document.getElementById('freetext-input');
-const freetextApply = document.getElementById('freetext-apply');
-const freetextMessages = document.getElementById('freetext-messages');
+const footerLeftInput = document.getElementById('footer-left');
+const footerRightInput = document.getElementById('footer-right');
+const footerPfandInput = document.getElementById('footer-pfand');
 const historyList = document.getElementById('history-list');
 const undoBtn = document.getElementById('undo-btn');
 const redoBtn = document.getElementById('redo-btn');
@@ -41,6 +42,8 @@ const exportBtn = document.getElementById('export-btn');
 const publishBtn = document.getElementById('publish-btn');
 const patInput = document.getElementById('pat-input');
 const savePatBtn = document.getElementById('save-pat-btn');
+const pdfPreviewBtn = document.getElementById('pdf-preview-btn');
+const pdfLiveLink = document.getElementById('pdf-live-link');
 const statusBar = document.getElementById('status-bar');
 
 init();
@@ -79,14 +82,6 @@ function init() {
     }
   });
 
-  freetextApply?.addEventListener('click', () => {
-    if (!currentMenu || !freetextInput) return;
-    const { menu, messages } = applyFreetext(currentMenu, freetextInput.value);
-    pushState(menu);
-    freetextMessages.textContent = messages.join(' · ') || 'Angewendet';
-    freetextInput.value = '';
-  });
-
   undoBtn?.addEventListener('click', undo);
   redoBtn?.addEventListener('click', redo);
   resetBtn?.addEventListener('click', resetToBaseline);
@@ -98,6 +93,11 @@ function init() {
     if (val && val !== '••••••••') sessionStorage.setItem(PAT_KEY, val);
     setStatus('PAT für diese Sitzung gespeichert');
   });
+
+  footerLeftInput?.addEventListener('change', syncFooterFromInputs);
+  footerRightInput?.addEventListener('change', syncFooterFromInputs);
+  footerPfandInput?.addEventListener('change', syncFooterFromInputs);
+  pdfPreviewBtn?.addEventListener('click', downloadPdfPreview);
 }
 
 async function showEditor() {
@@ -109,6 +109,7 @@ async function showEditor() {
     const menu = await loadMenu(MENU_URL);
     currentMenu = menu;
     loadUndoFromSession(menu);
+    updatePdfLiveLink();
     renderAll();
     await loadHistoryList();
   } catch (err) {
@@ -120,7 +121,24 @@ function renderAll() {
   if (!currentMenu || !previewRoot) return;
   renderKarte(currentMenu, previewRoot);
   renderStructuredEditor();
+  renderFooterEditor();
   updateUndoButtons();
+}
+
+function renderFooterEditor() {
+  if (!currentMenu) return;
+  if (footerLeftInput) footerLeftInput.value = currentMenu.footer.left;
+  if (footerRightInput) footerRightInput.value = currentMenu.footer.right;
+  if (footerPfandInput) footerPfandInput.value = currentMenu.footer.pfand;
+}
+
+function syncFooterFromInputs() {
+  if (!currentMenu) return;
+  pushState(updateFooter(currentMenu, {
+    left: footerLeftInput?.value ?? currentMenu.footer.left,
+    right: footerRightInput?.value ?? currentMenu.footer.right,
+    pfand: footerPfandInput?.value ?? currentMenu.footer.pfand,
+  }));
 }
 
 function renderStructuredEditor() {
@@ -137,7 +155,7 @@ function renderStructuredEditor() {
 
     section.items.forEach((item, index) => {
       const row = document.createElement('div');
-      row.className = 'struct-row';
+      row.className = 'struct-row' + (item.spacer ? ' struct-row-spacer' : '');
 
       const remove = document.createElement('button');
       remove.type = 'button';
@@ -146,9 +164,22 @@ function renderStructuredEditor() {
       remove.addEventListener('click', () => {
         pushState(removeItemAt(currentMenu, section.title, index));
       });
+      row.appendChild(remove);
 
-      const name = document.createElement('input');
+      if (item.spacer) {
+        const label = document.createElement('span');
+        label.className = 'spacer-label';
+        label.textContent = 'Leerzeile';
+        row.appendChild(label);
+        block.appendChild(row);
+        return;
+      }
+
+      const name = document.createElement('textarea');
+      name.className = 'name-input';
+      name.rows = 2;
       name.value = item.name;
+      name.placeholder = 'Name (Enter = Umbruch)';
       name.addEventListener('change', () => {
         pushState(updateItem(currentMenu, section.title, index, { name: name.value }));
       });
@@ -157,15 +188,32 @@ function renderStructuredEditor() {
       price.value = item.price || '';
       price.placeholder = 'Preis';
       price.className = 'price-input';
+      price.disabled = !!item.note;
       price.addEventListener('change', () => {
         pushState(updateItem(currentMenu, section.title, index, { price: price.value }));
       });
 
-      row.appendChild(remove);
+      const noteBtn = document.createElement('button');
+      noteBtn.type = 'button';
+      noteBtn.className = 'note-toggle' + (item.note ? ' is-active' : '');
+      noteBtn.textContent = 'H';
+      noteBtn.title = 'Hinweiszeile (klein, ohne Preis)';
+      noteBtn.addEventListener('click', () => {
+        const nextNote = !item.note;
+        pushState(updateItem(currentMenu, section.title, index, {
+          note: nextNote,
+          price: nextNote ? '' : item.price || '0,00',
+        }));
+      });
+
       row.appendChild(name);
       row.appendChild(price);
+      row.appendChild(noteBtn);
       block.appendChild(row);
     });
+
+    const rowActions = document.createElement('div');
+    rowActions.className = 'row-actions';
 
     const addRow = document.createElement('button');
     addRow.type = 'button';
@@ -174,7 +222,18 @@ function renderStructuredEditor() {
     addRow.addEventListener('click', () => {
       pushState(addItemToSection(currentMenu, section.title, { name: 'Neu', price: '0,00' }));
     });
-    block.appendChild(addRow);
+
+    const addSpacer = document.createElement('button');
+    addSpacer.type = 'button';
+    addSpacer.className = 'add-row-btn';
+    addSpacer.textContent = '+ Leerzeile';
+    addSpacer.addEventListener('click', () => {
+      pushState(addItemToSection(currentMenu, section.title, { spacer: true, name: '', price: '' }));
+    });
+
+    rowActions.appendChild(addRow);
+    rowActions.appendChild(addSpacer);
+    block.appendChild(rowActions);
     structuredRoot.appendChild(block);
   });
 }
@@ -229,6 +288,23 @@ function exportJson() {
   a.click();
   URL.revokeObjectURL(a.href);
   setStatus('menu.json exportiert');
+}
+
+function updatePdfLiveLink() {
+  if (!pdfLiveLink || !currentMenu?.meta?.updated) return;
+  pdfLiveLink.href = `poolbar_getraenkekarte_2026.pdf?v=${currentMenu.meta.updated}`;
+}
+
+function downloadPdfPreview() {
+  if (!currentMenu) return;
+  try {
+    sessionStorage.setItem(PRINT_MENU_KEY, JSON.stringify(currentMenu));
+  } catch {
+    setStatus('PDF-Vorschau nicht möglich (Speicher blockiert)', true);
+    return;
+  }
+  window.open('print.html?preview=1&print=1', '_blank', 'noopener');
+  setStatus('Druckdialog öffnet — „Als PDF speichern“ wählen');
 }
 
 async function publishMenu() {
