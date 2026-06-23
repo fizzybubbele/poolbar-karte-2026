@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poolbar Karte — Admin</title>
+  <link rel="stylesheet" href="assets/karte.css">
+  <link rel="stylesheet" href="assets/admin.css">
+</head>
+<body class="admin-body">
+  <div id="login-view" class="login-view">
+    <form id="login-form" class="login-card">
+      <h1>Karten-Editor</h1>
+      <p class="muted">Intern — Passwort erforderlich</p>
+      <input id="password" type="password" placeholder="Passwort" autocomplete="current-password" required>
+      <button type="submit">Anmelden</button>
+      <p id="login-error" class="error"></p>
+    </form>
+  </div>
+
+  <div id="editor-view" class="editor-view" hidden>
+    <header class="admin-header">
+      <h1>Karten-Editor</h1>
+      <a href="index.html">Zur Karte</a>
+    </header>
+
+    <div class="editor-grid">
+      <aside class="editor-panel">
+        <section>
+          <h2>Freitext</h2>
+          <textarea id="freetext-input" rows="5" placeholder="Radler weg&#10;Aperol Spritz 8,50 dazu&#10;neu in Beefeater Gin: Pink Gin 8,90"></textarea>
+          <button type="button" id="freetext-apply">Anwenden</button>
+          <p id="freetext-messages" class="muted"></p>
+        </section>
+
+        <section>
+          <h2>Strukturiert</h2>
+          <div id="structured-root"></div>
+        </section>
+
+        <section>
+          <h2>Verlauf</h2>
+          <div class="history-actions">
+            <button type="button" id="undo-btn">Rückgängig</button>
+            <button type="button" id="redo-btn">Wiederholen</button>
+            <button type="button" id="reset-btn">Reset (Tagesstand)</button>
+          </div>
+          <div id="history-list" class="history-list"></div>
+        </section>
+
+        <section>
+          <h2>Veröffentlichen</h2>
+          <input id="pat-input" type="password" placeholder="GitHub PAT (optional)">
+          <button type="button" id="save-pat-btn">PAT speichern</button>
+          <div class="publish-actions">
+            <button type="button" id="export-btn">JSON exportieren</button>
+            <button type="button" id="publish-btn">Veröffentlichen</button>
+          </div>
+        </section>
+
+        <p id="status-bar" class="status-bar"></p>
+      </aside>
+
+      <main class="preview-panel">
+        <h2>Vorschau</h2>
+        <div class="a4-viewport preview-viewport">
+          <div class="a4-sheet" id="preview-root"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="assets/admin.js"></script>
+</body>
+</html>

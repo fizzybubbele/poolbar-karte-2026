@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poolbar Karte — Druck</title>
+  <link rel="stylesheet" href="assets/karte.css">
+  <style>
+    body { background: #fff; }
+    .a4-viewport { padding: 0; min-height: auto; }
+    .a4-sheet { width: 190mm; min-height: 277mm; box-shadow: none; padding: 0; aspect-ratio: auto; }
+  </style>
+</head>
+<body>
+  <div class="a4-viewport">
+    <div class="a4-sheet" id="karte-root"></div>
+  </div>
+  <script type="module">
+    import { renderKarte, loadMenu } from './assets/karte.js';
+    loadMenu('data/menu.json').then((menu) => {
+      renderKarte(menu, document.getElementById('karte-root'));
+      document.fonts.ready.then(() => {
+        document.body.dataset.ready = '1';
+      });
+    });
+  </script>
+</body>
+</html>

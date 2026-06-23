@@ -23,6 +23,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: PDF erzeugen
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq google-chrome-stable
+          npx --yes serve . -l 4173 &
+          SERVER_PID=$!
+          sleep 2
+          google-chrome-stable \
+            --headless=new \
+            --disable-gpu \
+            --no-pdf-header-footer \
+            --run-all-compositor-stages-before-draw \
+            --virtual-time-budget=10000 \
+            --print-to-pdf=poolbar_getraenkekarte_2026.pdf \
+            "http://127.0.0.1:4173/print.html"
+          kill $SERVER_PID || true
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
