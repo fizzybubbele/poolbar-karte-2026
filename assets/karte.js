@@ -94,7 +94,7 @@ export function renderKarte(menu, container) {
 
   container.appendChild(karte);
   const sheet = container.closest('.a4-sheet');
-  if (sheet) schedulePreviewFit(sheet);
+  if (sheet && !document.body.dataset.ready) schedulePreviewFit(sheet);
 }
 
 let fitListenersBound = false;
@@ -106,30 +106,25 @@ function schedulePreviewFit(sheet) {
 }
 
 /**
- * Skaliert die Karte in der Screen-Vorschau auf die A4-Innenfläche (wie PDF).
+ * Skaliert die gesamte A4-Seite (Inhalt + 1 cm Rand) proportional in die Vorschau.
  * @param {HTMLElement} sheet
  */
 export function fitKartePreview(sheet) {
   if (window.matchMedia('print').matches) return;
 
-  const inner = sheet.querySelector('.a4-inner') || sheet;
-  const karte = inner.querySelector('.karte');
-  if (!karte) return;
+  const page = sheet.querySelector('.a4-page');
+  if (!page) return;
 
-  karte.style.width = '190mm';
-  karte.style.transform = 'none';
-  karte.style.marginLeft = '0';
+  page.style.transform = 'none';
 
-  const innerW = inner.clientWidth;
-  const innerH = inner.clientHeight;
-  const karteW = karte.offsetWidth;
-  const karteH = karte.offsetHeight;
-  if (!innerW || !innerH || !karteW || !karteH) return;
+  const sheetW = sheet.clientWidth;
+  const sheetH = sheet.clientHeight;
+  const pageW = page.offsetWidth;
+  const pageH = page.offsetHeight;
+  if (!sheetW || !sheetH || !pageW || !pageH) return;
 
-  const scale = Math.min(innerW / karteW, innerH / karteH);
-  karte.style.transformOrigin = 'top left';
-  karte.style.transform = `scale(${scale})`;
-  karte.style.marginLeft = `${(innerW - karteW * scale) / 2}px`;
+  const scale = Math.min(sheetW / pageW, sheetH / pageH);
+  page.style.transform = `scale(${scale})`;
 
   if (!fitListenersBound) {
     fitListenersBound = true;

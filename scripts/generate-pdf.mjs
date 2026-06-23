@@ -49,7 +49,7 @@ try {
   await page.pdf({
     path: join(root, 'poolbar_getraenkekarte_2026.pdf'),
     format: 'A4',
-    margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
+    margin: { top: '0', right: '0', bottom: '0', left: '0' },
     printBackground: true,
   });
   await browser.close();

@@ -18,20 +18,16 @@ const html = `<!DOCTYPE html>
   <style>
     body { background: #fff; margin: 0; }
     .a4-viewport { padding: 0; min-height: auto; }
-    .a4-sheet {
-      width: 190mm;
-      min-height: 277mm;
-      box-shadow: none;
-      padding: 0;
-      aspect-ratio: auto;
-      overflow: visible;
-    }
+    .a4-sheet { width: 210mm; height: 297mm; box-shadow: none; aspect-ratio: auto; display: block; }
+    .a4-page { transform: none !important; }
   </style>
 </head>
 <body>
   <div class="a4-viewport">
     <div class="a4-sheet">
-      <div class="a4-inner" id="karte-root"></div>
+      <div class="a4-page">
+        <div class="a4-inner" id="karte-root"></div>
+      </div>
     </div>
   </div>
   <script type="application/json" id="menu-data">${menu.replace(/</g, '\\u003c')}</script>
