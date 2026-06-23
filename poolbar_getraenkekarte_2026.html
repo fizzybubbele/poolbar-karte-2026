@@ -11,7 +11,7 @@
 
 @page {
   size: A4;
-  margin: 14mm;
+  margin: 10mm;
 }
 
 body {
@@ -19,12 +19,16 @@ body {
   font-size: 13px;
   color: #000;
   background: #fff;
-  width: 210mm;
-  min-height: 297mm;
-  padding: 14mm;
+  width: 100%;
+  min-height: 100%;
+  padding: 0;
+  margin: 0;
 }
 
-.karte { width: 100%; }
+.karte {
+  width: 100%;
+  transform-origin: top left;
+}
 
 .header {
   display: flex;
@@ -36,7 +40,7 @@ body {
 
 .header svg {
   display: block;
-  height: 30px;
+  height: 32px;
   width: auto;
   fill: #000;
 }
