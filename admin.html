@@ -4,22 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Poolbar Karte — Admin</title>
-  <link rel="stylesheet" href="assets/karte.css?v=4">
-  <link rel="stylesheet" href="assets/admin.css?v=4">
+  <link rel="stylesheet" href="assets/karte.css?v=5">
+  <link rel="stylesheet" href="assets/admin.css?v=5">
 </head>
 <body class="admin-body">
-  <div id="login-view" class="login-view">
+  <div id="login-view" class="login-view is-active">
     <form id="login-form" class="login-card" action="#" method="post">
       <h1>Karten-Editor</h1>
       <p class="muted">Intern — Passwort erforderlich</p>
       <input id="password" type="password" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit" id="login-submit">Anmelden</button>
       <p id="login-error" class="error"></p>
-      <p class="muted login-hint">Standard-Passwort steht in der README des Repos.</p>
+      <p class="muted login-hint">Passwort: <strong>poolbar2026</strong></p>
     </form>
   </div>
 
-  <div id="editor-view" class="editor-view" hidden>
+  <div id="editor-view" class="editor-view">
     <header class="admin-header">
       <h1>Karten-Editor</h1>
       <a href="index.html">Zur Karte</a>
@@ -29,7 +29,7 @@
       <aside class="editor-panel">
         <section>
           <h2>Karte bearbeiten</h2>
-          <p class="muted editor-hint">Enter = Zeilenumbruch · „Leerzeile“ = Abstand · „Hinweis“ = kleinere Schrift ohne Preis</p>
+          <p class="muted editor-hint">↑↓ verschieben · Enter = Zeilenumbruch · Leerzeile / Hinweis (H) · Spalte = links/rechts</p>
           <div id="structured-root"></div>
         </section>
 
@@ -91,6 +91,6 @@
       e.preventDefault();
     });
   </script>
-  <script type="module" src="assets/admin.js?v=4"></script>
+  <script type="module" src="assets/admin.js?v=5"></script>
 </body>
 </html>

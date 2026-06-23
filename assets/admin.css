@@ -4,10 +4,23 @@
 }
 
 .login-view {
+  display: none;
   min-height: 100dvh;
-  display: grid;
   place-items: center;
   padding: 24px;
+}
+
+.login-view.is-active {
+  display: grid;
+}
+
+.editor-view {
+  display: none;
+  min-height: 100dvh;
+}
+
+.editor-view.is-active {
+  display: block;
 }
 
 .login-view[hidden],
@@ -101,18 +114,71 @@
 }
 
 .struct-section { margin-bottom: 16px; }
-.struct-section h3 { font-size: 13px; margin-bottom: 8px; }
+
+.struct-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.struct-section-head h3 {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+}
+
+.section-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.column-select {
+  font: inherit;
+  font-size: 11px;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+.move-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.move-btn {
+  padding: 2px 6px !important;
+  font-size: 11px;
+  line-height: 1;
+  background: #fff !important;
+  color: #000 !important;
+}
+
+.move-btn:disabled {
+  opacity: 0.25;
+}
 
 .struct-row {
   display: grid;
-  grid-template-columns: 28px 1fr 72px 32px;
+  grid-template-columns: 56px 1fr 72px 32px;
   gap: 6px;
   margin-bottom: 6px;
   align-items: start;
 }
 
+.row-controls {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+}
+
 .struct-row-spacer {
-  grid-template-columns: 28px 1fr;
+  grid-template-columns: 56px 1fr;
 }
 
 .struct-row textarea.name-input {

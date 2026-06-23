@@ -4,6 +4,9 @@ import {
   addItemToSection,
   updateItem,
   updateFooter,
+  moveSection,
+  moveItemInSection,
+  updateSection,
 } from './parser.js';
 import {
   ADMIN_PASSWORD_HASH,
@@ -53,7 +56,7 @@ function init() {
   if (savedPat && patInput) patInput.value = '••••••••';
 
   if (sessionStorage.getItem(AUTH_KEY) === '1') {
-    showEditor();
+    void showEditor();
   }
 
   loginForm?.addEventListener('submit', async (e) => {
@@ -101,10 +104,7 @@ function init() {
 }
 
 async function showEditor() {
-  loginView.hidden = true;
-  loginView.style.display = 'none';
-  editorView.hidden = false;
-  editorView.style.removeProperty('display');
+  setView('editor');
   try {
     const menu = await loadMenu(MENU_URL);
     currentMenu = menu;
@@ -114,6 +114,22 @@ async function showEditor() {
     await loadHistoryList();
   } catch (err) {
     setStatus(err.message, true);
+  }
+}
+
+function setView(mode) {
+  const isLogin = mode === 'login';
+  loginView?.classList.toggle('is-active', isLogin);
+  editorView?.classList.toggle('is-active', !isLogin);
+  if (loginView) {
+    loginView.hidden = isLogin ? false : true;
+    if (isLogin) loginView.style.removeProperty('display');
+    else loginView.style.display = 'none';
+  }
+  if (editorView) {
+    editorView.hidden = isLogin;
+    if (isLogin) editorView.style.display = 'none';
+    else editorView.style.removeProperty('display');
   }
 }
 
@@ -145,17 +161,50 @@ function renderStructuredEditor() {
   if (!structuredRoot || !currentMenu) return;
   structuredRoot.innerHTML = '';
 
-  currentMenu.sections.forEach((section) => {
+  currentMenu.sections.forEach((section, sectionIndex) => {
     const block = document.createElement('div');
     block.className = 'struct-section';
 
+    const head = document.createElement('div');
+    head.className = 'struct-section-head';
+
     const h = document.createElement('h3');
     h.textContent = section.title;
-    block.appendChild(h);
+    head.appendChild(h);
+
+    const tools = document.createElement('div');
+    tools.className = 'section-tools';
+    tools.appendChild(createMoveButtons({
+      canUp: sectionIndex > 0,
+      canDown: sectionIndex < currentMenu.sections.length - 1,
+      onUp: () => pushState(moveSection(currentMenu, sectionIndex, sectionIndex - 1)),
+      onDown: () => pushState(moveSection(currentMenu, sectionIndex, sectionIndex + 1)),
+    }));
+
+    const colSelect = document.createElement('select');
+    colSelect.className = 'column-select';
+    colSelect.title = 'Spalte auf der Karte';
+    colSelect.innerHTML = '<option value="left">Links</option><option value="right">Rechts</option>';
+    colSelect.value = section.column;
+    colSelect.addEventListener('change', () => {
+      pushState(updateSection(currentMenu, sectionIndex, { column: /** @type {'left'|'right'} */ (colSelect.value) }));
+    });
+    tools.appendChild(colSelect);
+    head.appendChild(tools);
+    block.appendChild(head);
 
     section.items.forEach((item, index) => {
       const row = document.createElement('div');
       row.className = 'struct-row' + (item.spacer ? ' struct-row-spacer' : '');
+
+      const controls = document.createElement('div');
+      controls.className = 'row-controls';
+      controls.appendChild(createMoveButtons({
+        canUp: index > 0,
+        canDown: index < section.items.length - 1,
+        onUp: () => pushState(moveItemInSection(currentMenu, section.title, index, index - 1)),
+        onDown: () => pushState(moveItemInSection(currentMenu, section.title, index, index + 1)),
+      }));
 
       const remove = document.createElement('button');
       remove.type = 'button';
@@ -164,7 +213,8 @@ function renderStructuredEditor() {
       remove.addEventListener('click', () => {
         pushState(removeItemAt(currentMenu, section.title, index));
       });
-      row.appendChild(remove);
+      controls.appendChild(remove);
+      row.appendChild(controls);
 
       if (item.spacer) {
         const label = document.createElement('span');
@@ -439,6 +489,34 @@ function setStatus(msg, isError = false) {
   if (!statusBar) return;
   statusBar.textContent = msg;
   statusBar.classList.toggle('error', isError);
+}
+
+/**
+ * @param {{ canUp: boolean, canDown: boolean, onUp: () => void, onDown: () => void }} opts
+ */
+function createMoveButtons(opts) {
+  const wrap = document.createElement('div');
+  wrap.className = 'move-btns';
+
+  const up = document.createElement('button');
+  up.type = 'button';
+  up.className = 'move-btn';
+  up.textContent = '↑';
+  up.title = 'Nach oben';
+  up.disabled = !opts.canUp;
+  up.addEventListener('click', opts.onUp);
+
+  const down = document.createElement('button');
+  down.type = 'button';
+  down.className = 'move-btn';
+  down.textContent = '↓';
+  down.title = 'Nach unten';
+  down.disabled = !opts.canDown;
+  down.addEventListener('click', opts.onDown);
+
+  wrap.appendChild(up);
+  wrap.appendChild(down);
+  return wrap;
 }
 
 async function sha256(text) {

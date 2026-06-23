@@ -153,3 +153,45 @@ export function updateFooter(menu, patch) {
   Object.assign(next.footer, patch);
   return next;
 }
+
+/**
+ * @param {import('./karte.js').MenuData} menu
+ * @param {number} fromIndex
+ * @param {number} toIndex
+ */
+export function moveSection(menu, fromIndex, toIndex) {
+  const next = structuredClone(menu);
+  if (fromIndex === toIndex) return next;
+  if (fromIndex < 0 || toIndex < 0 || fromIndex >= next.sections.length || toIndex >= next.sections.length) return next;
+  const [section] = next.sections.splice(fromIndex, 1);
+  next.sections.splice(toIndex, 0, section);
+  return next;
+}
+
+/**
+ * @param {import('./karte.js').MenuData} menu
+ * @param {string} sectionTitle
+ * @param {number} fromIndex
+ * @param {number} toIndex
+ */
+export function moveItemInSection(menu, sectionTitle, fromIndex, toIndex) {
+  const next = structuredClone(menu);
+  const sec = next.sections.find((s) => s.title === sectionTitle);
+  if (!sec || fromIndex === toIndex) return next;
+  if (fromIndex < 0 || toIndex < 0 || fromIndex >= sec.items.length || toIndex >= sec.items.length) return next;
+  const [item] = sec.items.splice(fromIndex, 1);
+  sec.items.splice(toIndex, 0, item);
+  return next;
+}
+
+/**
+ * @param {import('./karte.js').MenuData} menu
+ * @param {number} sectionIndex
+ * @param {{ title?: string, column?: 'left'|'right' }} patch
+ */
+export function updateSection(menu, sectionIndex, patch) {
+  const next = structuredClone(menu);
+  if (!next.sections[sectionIndex]) return next;
+  Object.assign(next.sections[sectionIndex], patch);
+  return next;
+}
