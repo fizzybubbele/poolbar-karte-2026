@@ -18,12 +18,6 @@ body {
   margin: 0;
 }
 
-.karte {
-  width: 100%;
-  height: 100%;
-  font-size: 13px;
-}
-
 .a4-viewport {
   min-height: 100dvh;
   display: flex;
@@ -40,6 +34,20 @@ body {
   padding: 10mm;
   box-sizing: border-box;
   overflow: hidden;
+  position: relative;
+}
+
+.a4-inner {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.karte {
+  width: 190mm;
+  font-size: 13px;
+  transform-origin: top left;
 }
 
 .header {
@@ -162,6 +170,14 @@ body {
     padding: 0;
     aspect-ratio: auto;
     overflow: visible;
+  }
+
+  .a4-inner { overflow: visible; }
+
+  .karte {
+    width: 190mm;
+    transform: none !important;
+    margin: 0 !important;
   }
 
   .download-bar,

@@ -93,6 +93,50 @@ export function renderKarte(menu, container) {
   karte.appendChild(pfand);
 
   container.appendChild(karte);
+  const sheet = container.closest('.a4-sheet');
+  if (sheet) schedulePreviewFit(sheet);
+}
+
+let fitListenersBound = false;
+
+function schedulePreviewFit(sheet) {
+  requestAnimationFrame(() => {
+    document.fonts.ready.then(() => fitKartePreview(sheet));
+  });
+}
+
+/**
+ * Skaliert die Karte in der Screen-Vorschau auf die A4-Innenfläche (wie PDF).
+ * @param {HTMLElement} sheet
+ */
+export function fitKartePreview(sheet) {
+  if (window.matchMedia('print').matches) return;
+
+  const inner = sheet.querySelector('.a4-inner') || sheet;
+  const karte = inner.querySelector('.karte');
+  if (!karte) return;
+
+  karte.style.width = '190mm';
+  karte.style.transform = 'none';
+  karte.style.marginLeft = '0';
+
+  const innerW = inner.clientWidth;
+  const innerH = inner.clientHeight;
+  const karteW = karte.offsetWidth;
+  const karteH = karte.offsetHeight;
+  if (!innerW || !innerH || !karteW || !karteH) return;
+
+  const scale = Math.min(innerW / karteW, innerH / karteH);
+  karte.style.transformOrigin = 'top left';
+  karte.style.transform = `scale(${scale})`;
+  karte.style.marginLeft = `${(innerW - karteW * scale) / 2}px`;
+
+  if (!fitListenersBound) {
+    fitListenersBound = true;
+    window.addEventListener('resize', () => {
+      document.querySelectorAll('.a4-sheet').forEach((el) => fitKartePreview(el));
+    });
+  }
 }
 
 /**

@@ -30,7 +30,9 @@ const html = `<!DOCTYPE html>
 </head>
 <body>
   <div class="a4-viewport">
-    <div class="a4-sheet" id="karte-root"></div>
+    <div class="a4-sheet">
+      <div class="a4-inner" id="karte-root"></div>
+    </div>
   </div>
   <script type="application/json" id="menu-data">${menu.replace(/</g, '\\u003c')}</script>
   <script type="module">
