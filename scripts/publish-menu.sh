@@ -13,6 +13,8 @@ ISO="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 HISTORY="data/history/menu-${STAMP}.json"
 cp data/menu.json "$HISTORY"
 
+npm run build:pdf
+
 python3 - "$HISTORY" "$STAMP" "$ISO" <<'PY'
 import json, sys
 from pathlib import Path

@@ -1,0 +1,12 @@
+{
+  "name": "poolbar-karte",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:print": "node scripts/build-print-snapshot.mjs",
+    "build:pdf": "node scripts/build-print-snapshot.mjs && node scripts/generate-pdf.mjs"
+  },
+  "devDependencies": {
+    "puppeteer": "^24.0.0"
+  }
+}

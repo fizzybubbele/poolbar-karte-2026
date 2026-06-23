@@ -9,15 +9,23 @@
 <body>
   <div class="a4-viewport">
     <div class="a4-sheet" id="karte-root"></div>
-    <p class="screen-hint">Für Druck und exakte Darstellung: PDF herunterladen. Pinch-Zoom für Details auf dem Handy.</p>
+    <p class="screen-hint">Vorschau entspricht dem PDF. Für Druck: PDF herunterladen.</p>
   </div>
   <div class="download-bar">
-    <a class="download-btn" href="poolbar_getraenkekarte_2026.pdf" download>PDF herunterladen</a>
+    <a class="download-btn" id="pdf-download" href="poolbar_getraenkekarte_2026.pdf" download="poolbar_getraenkekarte_2026.pdf">PDF herunterladen</a>
   </div>
   <script type="module">
     import { renderKarte, loadMenu } from './assets/karte.js';
     const root = document.getElementById('karte-root');
-    loadMenu('data/menu.json').then((menu) => renderKarte(menu, root));
+    const link = document.getElementById('pdf-download');
+    loadMenu('data/menu.json').then((menu) => {
+      renderKarte(menu, root);
+      if (link && menu.meta?.updated) {
+        link.href = `poolbar_getraenkekarte_2026.pdf?v=${menu.meta.updated}`;
+      }
+    }).catch(() => {
+      if (link) link.textContent = 'PDF vorübergehend nicht verfügbar';
+    });
   </script>
 </body>
 </html>

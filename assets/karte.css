@@ -13,10 +13,15 @@ html {
 
 body {
   font-family: 'ABCCamera', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: clamp(11px, 2.8vw, 13px);
   color: #000;
   background: #ececec;
   margin: 0;
+}
+
+.karte {
+  width: 100%;
+  height: 100%;
+  font-size: 13px;
 }
 
 .a4-viewport {
@@ -36,8 +41,6 @@ body {
   box-sizing: border-box;
   overflow: hidden;
 }
-
-.karte { width: 100%; height: 100%; }
 
 .header {
   display: flex;
