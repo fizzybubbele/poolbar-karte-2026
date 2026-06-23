@@ -9,12 +9,13 @@
 </head>
 <body class="admin-body">
   <div id="login-view" class="login-view">
-    <form id="login-form" class="login-card">
+    <form id="login-form" class="login-card" action="#" method="post">
       <h1>Karten-Editor</h1>
       <p class="muted">Intern — Passwort erforderlich</p>
       <input id="password" type="password" placeholder="Passwort" autocomplete="current-password" required>
-      <button type="submit">Anmelden</button>
+      <button type="submit" id="login-submit">Anmelden</button>
       <p id="login-error" class="error"></p>
+      <p class="muted login-hint">Standard-Passwort steht in der README des Repos.</p>
     </form>
   </div>
 
@@ -74,6 +75,11 @@
     </div>
   </div>
 
+  <script>
+    document.getElementById('login-form')?.addEventListener('submit', function (e) {
+      e.preventDefault();
+    });
+  </script>
   <script type="module" src="assets/admin.js"></script>
 </body>
 </html>
