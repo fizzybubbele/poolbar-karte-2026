@@ -1,5 +1,6 @@
 import { renderKarte, loadMenu, cloneMenu } from './karte.js';
 import {
+  applyFreetext,
   removeItemAt,
   addItemToSection,
   updateItem,
@@ -34,6 +35,9 @@ const loginForm = document.getElementById('login-form');
 const loginError = document.getElementById('login-error');
 const previewRoot = document.getElementById('preview-root');
 const structuredRoot = document.getElementById('structured-root');
+const freetextInput = document.getElementById('freetext-input');
+const freetextApply = document.getElementById('freetext-apply');
+const freetextMessages = document.getElementById('freetext-messages');
 const footerLeftInput = document.getElementById('footer-left');
 const footerRightInput = document.getElementById('footer-right');
 const footerPfandInput = document.getElementById('footer-pfand');
@@ -101,6 +105,14 @@ function init() {
   footerRightInput?.addEventListener('change', syncFooterFromInputs);
   footerPfandInput?.addEventListener('change', syncFooterFromInputs);
   pdfPreviewBtn?.addEventListener('click', downloadPdfPreview);
+
+  freetextApply?.addEventListener('click', () => {
+    if (!currentMenu || !freetextInput) return;
+    const { menu, messages } = applyFreetext(currentMenu, freetextInput.value);
+    pushState(menu);
+    freetextMessages.textContent = messages.join(' · ') || 'Angewendet';
+    freetextInput.value = '';
+  });
 }
 
 async function showEditor() {

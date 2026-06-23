@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Poolbar Karte — Admin</title>
-  <link rel="stylesheet" href="assets/karte.css?v=5">
-  <link rel="stylesheet" href="assets/admin.css?v=5">
+  <link rel="stylesheet" href="assets/karte.css?v=6">
+  <link rel="stylesheet" href="assets/admin.css?v=6">
 </head>
 <body class="admin-body">
   <div id="login-view" class="login-view is-active">
@@ -27,6 +27,14 @@
 
     <div class="editor-grid">
       <aside class="editor-panel">
+        <section>
+          <h2>Freitext</h2>
+          <p class="muted editor-hint">Schnelländerungen — eine Regel pro Zeile</p>
+          <textarea id="freetext-input" rows="4" placeholder="Radler weg&#10;Aperol Spritz 8,50 dazu&#10;neu in Beefeater Gin: Pink Gin 8,90"></textarea>
+          <button type="button" id="freetext-apply">Anwenden</button>
+          <p id="freetext-messages" class="muted"></p>
+        </section>
+
         <section>
           <h2>Karte bearbeiten</h2>
           <p class="muted editor-hint">↑↓ verschieben · Enter = Zeilenumbruch · Leerzeile / Hinweis (H) · Spalte = links/rechts</p>
@@ -91,6 +99,6 @@
       e.preventDefault();
     });
   </script>
-  <script type="module" src="assets/admin.js?v=5"></script>
+  <script type="module" src="assets/admin.js?v=6"></script>
 </body>
 </html>
