@@ -35,10 +35,16 @@
   margin: 0;
   background: var(--admin-bg);
   color: var(--admin-text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
+}
+
+.login-view,
+.admin-header,
+.editor-panel,
+.preview-sticky {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* ——— Views ——— */
@@ -708,6 +714,14 @@ textarea {
   min-height: auto;
   padding: 0;
   background: transparent;
+}
+
+.preview-viewport .a4-sheet,
+.preview-viewport .a4-page,
+.preview-viewport .a4-inner,
+.preview-viewport .karte,
+.preview-viewport .karte * {
+  font-family: 'ABCCamera', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 /* ——— Utilities ——— */
