@@ -13,6 +13,7 @@
   --admin-radius: 8px;
   --admin-radius-sm: 4px;
   --admin-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.06);
+  --admin-header-height: 73px;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --transition-fast: 160ms var(--ease-out);
   --transition-ui: 200ms var(--ease-out);
@@ -234,13 +235,14 @@
 .editor-grid {
   display: grid;
   grid-template-columns: minmax(400px, 520px) 1fr;
-  min-height: calc(100dvh - 57px);
+  align-items: start;
+  min-height: calc(100dvh - var(--admin-header-height));
 }
 
 .editor-panel {
   display: flex;
   flex-direction: column;
-  min-height: calc(100dvh - 57px);
+  min-height: calc(100dvh - var(--admin-header-height));
   border-right: 1px solid var(--admin-border);
   background: var(--admin-surface);
 }
@@ -766,18 +768,23 @@ textarea {
 /* ——— Preview ——— */
 
 .preview-panel {
+  position: sticky;
+  top: var(--admin-header-height);
+  align-self: start;
+  max-height: calc(100dvh - var(--admin-header-height));
   padding: 16px 20px 24px;
-  overflow: auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--admin-bg);
 }
 
 .preview-sticky {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 2;
   padding-bottom: 12px;
   margin-bottom: 8px;
-  background: linear-gradient(var(--admin-bg) 70%, transparent);
+  background: var(--admin-bg);
 }
 
 .preview-toolbar {
@@ -838,18 +845,169 @@ textarea {
 }
 
 @media (max-width: 960px) {
+  :root {
+    --admin-header-height: 108px;
+    --admin-preview-height: min(42dvh, 360px);
+  }
+
+  .admin-body {
+    overflow-x: hidden;
+  }
+
+  .admin-header {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
+    padding:
+      max(12px, env(safe-area-inset-top))
+      max(14px, env(safe-area-inset-right))
+      12px
+      max(14px, env(safe-area-inset-left));
+  }
+
+  .admin-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
   .editor-grid {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
   }
 
   .editor-panel {
+    order: 2;
     min-height: auto;
     border-right: none;
-    border-bottom: 1px solid var(--admin-border);
+    border-bottom: none;
   }
 
-  .preview-sticky {
-    position: static;
-    background: none;
+  .panel-scroll {
+    padding: 12px max(12px, env(safe-area-inset-right)) 12px max(12px, env(safe-area-inset-left));
+  }
+
+  .preview-panel {
+    order: 1;
+    position: sticky;
+    top: var(--admin-header-height);
+    z-index: 8;
+    width: 100%;
+    max-height: var(--admin-preview-height);
+    padding:
+      10px
+      max(12px, env(safe-area-inset-right))
+      12px
+      max(12px, env(safe-area-inset-left));
+    border-bottom: 1px solid var(--admin-border);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  }
+
+  .preview-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .preview-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .preview-actions .btn {
+    width: 100%;
+  }
+
+  .preview-viewport {
+    display: flex;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .preview-viewport .a4-sheet {
+    width: min(100%, calc(100vw - 24px));
+    max-width: none;
+  }
+
+  .status-bar {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --admin-header-height: 124px;
+    --admin-preview-height: min(38dvh, 320px);
+  }
+
+  .version-badge {
+    display: none;
+  }
+
+  .admin-header-title h1 {
+    font-size: 16px;
+  }
+
+  .struct-section {
+    padding: 12px;
+  }
+
+  .struct-row-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .struct-row input.price-input {
+    text-align: left;
+  }
+
+  .section-tools {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .section-tool-group {
+    width: 100%;
+  }
+
+  .column-select,
+  .move-category-select {
+    width: 100%;
+    flex: none;
+  }
+
+  .move-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .struct-row .remove-btn,
+  .struct-row .note-toggle {
+    min-height: 44px;
+  }
+
+  .struct-row-toolbar {
+    gap: 8px;
+  }
+
+  .toolbar-spacer {
+    display: none;
+  }
+
+  .struct-row .move-category-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .preview-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-header-actions .btn-sm {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-inline: 10px;
   }
 }

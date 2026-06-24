@@ -756,7 +756,7 @@ function createCategoryMoveSelect(sectionIndex, itemIndex) {
 
   const placeholder = document.createElement('option');
   placeholder.value = '';
-  placeholder.textContent = 'In Kategorie verschieben…';
+  placeholder.textContent = 'Verschieben…';
   select.appendChild(placeholder);
 
   if (!currentMenu) return select;
