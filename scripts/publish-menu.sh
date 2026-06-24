@@ -20,9 +20,11 @@ import json, sys
 from pathlib import Path
 history_path, stamp, iso = sys.argv[1:4]
 root = Path(".")
+menu = json.loads((root / "data/menu.json").read_text(encoding="utf-8"))
+updated = menu.get("meta", {}).get("updated")
 index_path = root / "data/history/index.json"
 index = json.loads(index_path.read_text(encoding="utf-8")) if index_path.exists() else []
-index.insert(0, {"path": history_path, "stamp": stamp, "at": iso})
+index.insert(0, {"path": history_path, "stamp": stamp, "at": iso, "updated": updated})
 index_path.write_text(json.dumps(index[:50], ensure_ascii=False, indent=2), encoding="utf-8")
 PY
 

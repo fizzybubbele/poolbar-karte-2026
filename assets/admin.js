@@ -42,8 +42,12 @@ const footerLeftInput = document.getElementById('footer-left');
 const footerRightInput = document.getElementById('footer-right');
 const footerPfandInput = document.getElementById('footer-pfand');
 const historyList = document.getElementById('history-list');
+const versionCurrent = document.getElementById('version-current');
+const versionBadge = document.getElementById('version-badge');
 const undoBtn = document.getElementById('undo-btn');
 const redoBtn = document.getElementById('redo-btn');
+const headerUndoBtn = document.getElementById('header-undo-btn');
+const headerRedoBtn = document.getElementById('header-redo-btn');
 const resetBtn = document.getElementById('reset-btn');
 const exportBtn = document.getElementById('export-btn');
 const publishBtn = document.getElementById('publish-btn');
@@ -92,6 +96,8 @@ function init() {
 
   undoBtn?.addEventListener('click', undo);
   redoBtn?.addEventListener('click', redo);
+  headerUndoBtn?.addEventListener('click', undo);
+  headerRedoBtn?.addEventListener('click', redo);
   resetBtn?.addEventListener('click', resetToBaseline);
   exportBtn?.addEventListener('click', exportJson);
   publishBtn?.addEventListener('click', publishMenu);
@@ -151,6 +157,8 @@ function renderAll() {
   renderStructuredEditor();
   renderFooterEditor();
   updateUndoButtons();
+  updateVersionBadge();
+  renderVersionCurrent();
 }
 
 function renderFooterEditor() {
@@ -237,6 +245,7 @@ function renderStructuredEditor() {
 
       const remove = document.createElement('button');
       remove.type = 'button';
+      remove.className = 'btn btn-ghost btn-icon remove-btn';
       remove.textContent = '×';
       remove.title = 'Entfernen';
       remove.addEventListener('click', () => {
@@ -275,7 +284,7 @@ function renderStructuredEditor() {
 
       const noteBtn = document.createElement('button');
       noteBtn.type = 'button';
-      noteBtn.className = 'note-toggle' + (item.note ? ' is-active' : '');
+      noteBtn.className = 'btn btn-ghost btn-icon note-toggle' + (item.note ? ' is-active' : '');
       noteBtn.textContent = 'H';
       noteBtn.title = 'Hinweiszeile (klein, ohne Preis)';
       noteBtn.addEventListener('click', () => {
@@ -298,7 +307,7 @@ function renderStructuredEditor() {
 
     const addRow = document.createElement('button');
     addRow.type = 'button';
-    addRow.className = 'add-row-btn';
+    addRow.className = 'btn btn-secondary btn-sm add-row-btn';
     addRow.textContent = '+ Zeile';
     addRow.addEventListener('click', () => {
       pushState(addItemToSection(currentMenu, section.title, { name: 'Neu', price: '0,00' }));
@@ -306,7 +315,7 @@ function renderStructuredEditor() {
 
     const addSpacer = document.createElement('button');
     addSpacer.type = 'button';
-    addSpacer.className = 'add-row-btn';
+    addSpacer.className = 'btn btn-ghost btn-sm add-row-btn';
     addSpacer.textContent = '+ Leerzeile';
     addSpacer.addEventListener('click', () => {
       pushState(addItemToSection(currentMenu, section.title, { spacer: true, name: '', price: '' }));
@@ -349,8 +358,12 @@ function redo() {
 }
 
 function updateUndoButtons() {
-  if (undoBtn) undoBtn.disabled = undoPointer <= 0;
-  if (redoBtn) redoBtn.disabled = redoStack.length === 0;
+  const canUndo = undoPointer > 0;
+  const canRedo = redoStack.length > 0;
+  if (undoBtn) undoBtn.disabled = !canUndo;
+  if (redoBtn) redoBtn.disabled = !canRedo;
+  if (headerUndoBtn) headerUndoBtn.disabled = !canUndo;
+  if (headerRedoBtn) headerRedoBtn.disabled = !canRedo;
 }
 
 async function resetToBaseline() {
@@ -408,7 +421,7 @@ async function publishMenu() {
     storePat(pat);
     await upsertFile(pat, 'data/menu.json', menuJson, 'Karte aktualisiert');
     await upsertFile(pat, historyPath, menuJson, `Snapshot ${stamp}`, false);
-    await appendHistoryIndex(pat, historyPath, stamp);
+    await appendHistoryIndex(pat, historyPath, stamp, menuToPublish.meta.updated);
     pushState(menuToPublish);
     setStatus('Veröffentlicht — Deploy läuft auf GitHub (~1–2 Min.)');
     await loadHistoryList();
@@ -472,7 +485,7 @@ async function validatePat(pat) {
   }
 }
 
-async function appendHistoryIndex(pat, path, stamp) {
+async function appendHistoryIndex(pat, path, stamp, updated) {
   let index = [];
   try {
     const existing = await githubGet(pat, HISTORY_INDEX_URL);
@@ -480,34 +493,109 @@ async function appendHistoryIndex(pat, path, stamp) {
   } catch {
     index = [];
   }
-  index.unshift({ path, stamp, at: new Date().toISOString() });
+  index.unshift({ path, stamp, at: new Date().toISOString(), updated: updated || null });
   index = index.slice(0, 50);
   await upsertFile(pat, HISTORY_INDEX_URL, JSON.stringify(index, null, 2), 'History-Index aktualisiert', false);
+}
+
+function formatVersionDate(iso) {
+  if (!iso) return 'Unbekannt';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso.replace('T', ' ').slice(0, 16);
+  return new Intl.DateTimeFormat('de-AT', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
+}
+
+function updateVersionBadge() {
+  if (!versionBadge) return;
+  const updated = currentMenu?.meta?.updated;
+  versionBadge.textContent = updated ? `Stand ${updated}` : '';
+}
+
+function renderVersionCurrent() {
+  if (!versionCurrent) return;
+  const updated = currentMenu?.meta?.updated;
+  if (!updated) {
+    versionCurrent.hidden = true;
+    versionCurrent.innerHTML = '';
+    return;
+  }
+  versionCurrent.hidden = false;
+  versionCurrent.innerHTML = `
+    <span class="version-current-label">Live auf der Website</span>
+    <span class="version-current-date">${updated}</span>
+  `;
 }
 
 async function loadHistoryList() {
   if (!historyList) return;
   historyList.innerHTML = '';
+
+  const baselineBtn = document.createElement('button');
+  baselineBtn.type = 'button';
+  baselineBtn.className = 'version-row history-item history-item-baseline';
+  baselineBtn.innerHTML = `
+    <span class="version-row-main">
+      <span class="version-label">Offizieller Tagesstand</span>
+      <span class="version-meta muted">Baseline — Reset-Vorlage</span>
+    </span>
+    <span class="version-badge-pill">Baseline</span>
+  `;
+  baselineBtn.addEventListener('click', async () => {
+    if (!confirm('Offiziellen Tagesstand (Baseline) laden?')) return;
+    const menu = await loadMenu(BASELINE_URL);
+    pushState(menu);
+    setStatus('Baseline geladen');
+  });
+  historyList.appendChild(baselineBtn);
+
   try {
     const res = await fetch(HISTORY_INDEX_URL, { cache: 'no-store' });
     if (!res.ok) throw new Error('no index');
     const index = await res.json();
-    index.forEach((entry) => {
+    if (!index.length) {
+      const p = document.createElement('p');
+      p.className = 'muted history-empty';
+      p.textContent = 'Noch keine veröffentlichten Versionen — nach dem ersten Veröffentlichen erscheinen sie hier.';
+      historyList.appendChild(p);
+      return;
+    }
+
+    index.forEach((entry, indexPos) => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'history-item';
-      btn.textContent = entry.at?.slice(0, 16).replace('T', ' ') || entry.path;
+      btn.className = 'version-row history-item';
+      const label = formatVersionDate(entry.at);
+      const meta = entry.updated ? `Karte ${entry.updated}` : entry.stamp?.replace('T', ' ') || entry.path;
+      const isLatest = indexPos === 0;
+      btn.innerHTML = `
+        <span class="version-row-main">
+          <span class="version-label">${label}</span>
+          <span class="version-meta muted">${meta}</span>
+        </span>
+        ${isLatest ? '<span class="version-badge-pill">Neueste</span>' : ''}
+      `;
       btn.addEventListener('click', async () => {
-        const menu = await loadMenu(entry.path);
-        pushState(menu);
-        setStatus(`Stand geladen: ${entry.path}`);
+        if (!confirm(`Stand vom ${label} laden?`)) return;
+        try {
+          const menu = await loadMenu(entry.path);
+          pushState(menu);
+          setStatus(`Version geladen: ${label}`);
+        } catch (err) {
+          setStatus(`Version konnte nicht geladen werden: ${err.message}`, true);
+        }
       });
       historyList.appendChild(btn);
     });
   } catch {
     const p = document.createElement('p');
-    p.className = 'muted';
-    p.textContent = 'Noch keine History-Einträge';
+    p.className = 'muted history-empty';
+    p.textContent = 'Noch keine veröffentlichten Versionen — nach dem ersten Veröffentlichen erscheinen sie hier.';
     historyList.appendChild(p);
   }
 }
@@ -590,7 +678,7 @@ function loadUndoFromSession(fallback) {
 function setStatus(msg, isError = false) {
   if (!statusBar) return;
   statusBar.textContent = msg;
-  statusBar.classList.toggle('error', isError);
+  statusBar.classList.toggle('is-error', isError);
 }
 
 function createMoveButtons(opts) {
@@ -600,7 +688,7 @@ function createMoveButtons(opts) {
 
   const up = document.createElement('button');
   up.type = 'button';
-  up.className = 'move-btn';
+  up.className = 'btn btn-ghost btn-icon move-btn';
   up.textContent = '↑';
   up.setAttribute('aria-label', 'Nach oben');
   up.title = 'Nach oben';
@@ -609,7 +697,7 @@ function createMoveButtons(opts) {
 
   const down = document.createElement('button');
   down.type = 'button';
-  down.className = 'move-btn';
+  down.className = 'btn btn-ghost btn-icon move-btn';
   down.textContent = '↓';
   down.setAttribute('aria-label', 'Nach unten');
   down.title = 'Nach unten';

@@ -3,90 +3,128 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Poolbar Karte — Admin</title>
-  <link rel="stylesheet" href="assets/karte.css?v=10">
-  <link rel="stylesheet" href="assets/admin.css?v=10">
+  <link rel="stylesheet" href="assets/karte.css?v=12">
+  <link rel="stylesheet" href="assets/admin.css?v=12">
 </head>
 <body class="admin-body">
   <div id="login-view" class="login-view is-active">
     <form id="login-form" class="login-card" action="#" method="post">
+      <p class="login-eyebrow">Poolbar 2026</p>
       <h1>Karten-Editor</h1>
       <p class="muted">Intern — Passwort erforderlich</p>
-      <input id="password" type="password" placeholder="Passwort" autocomplete="current-password" required>
-      <button type="submit" id="login-submit">Anmelden</button>
-      <p id="login-error" class="error"></p>
-      <p class="muted login-hint">Passwort: <strong>poolbar2026</strong></p>
+      <label class="field-label" for="password">Passwort</label>
+      <input id="password" type="password" placeholder="Passwort eingeben" autocomplete="current-password" required>
+      <button type="submit" id="login-submit" class="btn btn-primary btn-block">Anmelden</button>
+      <p id="login-error" class="error" role="alert"></p>
+      <p class="muted login-hint">Standard: <strong>poolbar2026</strong></p>
     </form>
   </div>
 
   <div id="editor-view" class="editor-view">
     <header class="admin-header">
-      <h1>Karten-Editor</h1>
-      <a href="index.html">Zur Karte</a>
+      <div class="admin-header-title">
+        <p class="admin-eyebrow">Poolbar 2026</p>
+        <h1>Karten-Editor</h1>
+        <p id="version-badge" class="version-badge muted" aria-live="polite"></p>
+      </div>
+      <div class="admin-header-actions">
+        <button type="button" id="header-undo-btn" class="btn btn-ghost btn-sm" disabled>Rückgängig</button>
+        <button type="button" id="header-redo-btn" class="btn btn-ghost btn-sm" disabled>Wiederholen</button>
+        <a href="index.html" class="btn btn-secondary btn-sm">Zur Karte</a>
+      </div>
     </header>
 
     <div class="editor-grid">
       <aside class="editor-panel">
-        <section>
-          <h2>Freitext</h2>
-          <p class="muted editor-hint">Schnelländerungen — eine Regel pro Zeile</p>
-          <textarea id="freetext-input" rows="4" placeholder="Radler weg&#10;Aperol Spritz 8,50 dazu&#10;neu in Beefeater Gin: Pink Gin 8,90"></textarea>
-          <button type="button" id="freetext-apply">Anwenden</button>
-          <p id="freetext-messages" class="muted"></p>
-        </section>
+        <div class="panel-scroll">
+          <section class="panel-block panel-block-primary">
+            <div class="panel-block-head">
+              <h2>Karte bearbeiten</h2>
+              <p class="muted panel-desc">Kategorie umbenennen · ↑↓ verschieben · Getränke per ↑↓ oder → Kat.</p>
+            </div>
+            <div id="structured-root" class="structured-root"></div>
+          </section>
 
-        <section>
-          <h2>Karte bearbeiten</h2>
-          <p class="muted editor-hint"><strong>Kategorie:</strong> Name editierbar · ↑↓ · <strong>Getränk:</strong> ↑↓ · → Kat.</p>
-          <div id="structured-root"></div>
-        </section>
+          <section class="panel-block">
+            <div class="panel-block-head">
+              <h2>Fußzeile</h2>
+              <p class="muted panel-desc">Enter für Zeilenumbruch in der Karte</p>
+            </div>
+            <label class="field-label" for="footer-left">Links</label>
+            <textarea id="footer-left" rows="2"></textarea>
+            <label class="field-label" for="footer-right">Rechts</label>
+            <textarea id="footer-right" rows="2"></textarea>
+            <label class="field-label" for="footer-pfand">Pfand</label>
+            <textarea id="footer-pfand" rows="2"></textarea>
+          </section>
 
-        <section>
-          <h2>Fußzeile</h2>
-          <label class="field-label" for="footer-left">Links</label>
-          <textarea id="footer-left" rows="2"></textarea>
-          <label class="field-label" for="footer-right">Rechts</label>
-          <textarea id="footer-right" rows="2"></textarea>
-          <label class="field-label" for="footer-pfand">Pfand</label>
-          <textarea id="footer-pfand" rows="2"></textarea>
-        </section>
+          <details class="panel-details">
+            <summary>Freitext</summary>
+            <div class="panel-details-body">
+              <p class="muted panel-desc">Eine Regel pro Zeile — z. B. <code>Radler weg</code></p>
+              <textarea id="freetext-input" rows="4" placeholder="Radler weg&#10;Aperol Spritz 8,50 dazu&#10;neu in Beefeater Gin: Pink Gin 8,90"></textarea>
+              <button type="button" id="freetext-apply" class="btn btn-secondary">Anwenden</button>
+              <p id="freetext-messages" class="muted freetext-feedback" aria-live="polite"></p>
+            </div>
+          </details>
 
-        <section>
-          <h2>Verlauf</h2>
-          <div class="history-actions">
-            <button type="button" id="undo-btn">Rückgängig</button>
-            <button type="button" id="redo-btn">Wiederholen</button>
-            <button type="button" id="reset-btn">Reset (Tagesstand)</button>
-          </div>
-          <div id="history-list" class="history-list"></div>
-        </section>
+          <details class="panel-details">
+            <summary>Sitzung</summary>
+            <div class="panel-details-body">
+              <p class="muted panel-desc">Änderungen in dieser Sitzung — gehen beim Schließen des Tabs verloren, bis du veröffentlichst.</p>
+              <div class="btn-row">
+                <button type="button" id="undo-btn" class="btn btn-secondary btn-sm">Rückgängig</button>
+                <button type="button" id="redo-btn" class="btn btn-secondary btn-sm">Wiederholen</button>
+                <button type="button" id="reset-btn" class="btn btn-ghost btn-sm">Reset</button>
+              </div>
+            </div>
+          </details>
 
-        <section>
-          <h2>Veröffentlichen</h2>
-          <p class="muted editor-hint">GitHub → Settings → Developer settings → Personal access tokens. Repo <strong>poolbar-karte-2026</strong>, Recht <strong>Contents: Read and write</strong>.</p>
-          <input id="pat-input" type="password" placeholder="GitHub PAT einfügen" autocomplete="off">
-          <div class="publish-actions">
-            <button type="button" id="save-pat-btn">PAT speichern</button>
-            <button type="button" id="clear-pat-btn">PAT löschen</button>
-          </div>
-          <div class="publish-actions">
-            <button type="button" id="export-btn">JSON exportieren</button>
-            <button type="button" id="publish-btn">Veröffentlichen</button>
-          </div>
-        </section>
+          <details class="panel-details" open>
+            <summary>Versionsverlauf</summary>
+            <div class="panel-details-body">
+              <p class="muted panel-desc">Gespeicherte Stände nach <strong>Veröffentlichen</strong> — antippen zum Laden in den Editor.</p>
+              <div id="version-current" class="version-current" aria-live="polite"></div>
+              <div id="history-list" class="history-list"></div>
+            </div>
+          </details>
 
-        <p id="status-bar" class="status-bar"></p>
+          <details class="panel-details">
+            <summary>Veröffentlichen</summary>
+            <div class="panel-details-body">
+              <p class="muted panel-desc">GitHub PAT mit <strong>Contents: Read and write</strong> für <strong>poolbar-karte-2026</strong></p>
+              <label class="field-label" for="pat-input">GitHub Token</label>
+              <input id="pat-input" type="password" placeholder="ghp_… oder github_pat_…" autocomplete="off">
+              <div class="btn-row">
+                <button type="button" id="save-pat-btn" class="btn btn-secondary btn-sm">PAT speichern</button>
+                <button type="button" id="clear-pat-btn" class="btn btn-ghost btn-sm">PAT löschen</button>
+              </div>
+              <div class="btn-row">
+                <button type="button" id="export-btn" class="btn btn-secondary btn-sm">JSON exportieren</button>
+                <button type="button" id="publish-btn" class="btn btn-primary btn-sm">Veröffentlichen</button>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <div id="status-bar" class="status-bar" role="status" aria-live="polite"></div>
       </aside>
 
       <main class="preview-panel">
-        <div class="preview-toolbar">
-          <h2>Vorschau</h2>
-          <div class="preview-actions">
-            <button type="button" id="pdf-preview-btn" class="download-btn">PDF herunterladen</button>
-            <a id="pdf-live-link" class="download-btn download-btn-secondary" href="poolbar_getraenkekarte_2026.pdf" download="poolbar_getraenkekarte_2026.pdf">PDF (live)</a>
+        <div class="preview-sticky">
+          <div class="preview-toolbar">
+            <div>
+              <h2>Vorschau</h2>
+              <p class="muted preview-desc">Live — entspricht dem PDF-Layout</p>
+            </div>
+            <div class="preview-actions">
+              <button type="button" id="pdf-preview-btn" class="btn btn-primary btn-sm">PDF herunterladen</button>
+              <a id="pdf-live-link" class="btn btn-secondary btn-sm" href="poolbar_getraenkekarte_2026.pdf" download="poolbar_getraenkekarte_2026.pdf">PDF (live)</a>
+            </div>
           </div>
         </div>
-        <p class="muted preview-hint">Aktuelle Vorschau → Druckdialog → „Als PDF speichern“. „PDF (live)“ = veröffentlichte Datei.</p>
         <div class="a4-viewport preview-viewport">
           <div class="a4-sheet">
             <div class="a4-page">
@@ -103,6 +141,6 @@
       e.preventDefault();
     });
   </script>
-  <script type="module" src="assets/admin.js?v=10"></script>
+  <script type="module" src="assets/admin.js?v=12"></script>
 </body>
 </html>
