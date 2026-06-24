@@ -233,7 +233,7 @@
 
 .editor-grid {
   display: grid;
-  grid-template-columns: minmax(340px, 440px) 1fr;
+  grid-template-columns: minmax(400px, 520px) 1fr;
   min-height: calc(100dvh - 57px);
 }
 
@@ -403,115 +403,198 @@ textarea {
 
 .structured-root {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .struct-section {
-  padding: 12px;
+  padding: 14px;
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius);
-  background: var(--admin-surface-muted);
+  background: var(--admin-surface);
+  box-shadow: var(--admin-shadow);
 }
 
 .struct-section-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 8px;
-  margin-bottom: 10px;
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .section-title-input {
-  flex: 1;
-  min-width: 0;
-  font-size: 13px;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 15px;
   font-weight: 600;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-surface-muted);
+}
+
+.section-title-input:focus {
+  outline: none;
+  border-color: var(--admin-border-strong);
+  background: var(--admin-surface);
 }
 
 .section-tools {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  gap: 10px;
 }
 
-.section-tools .move-label {
-  font-size: 9px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--admin-muted);
+.section-tool-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-group-label {
+  font-size: 11px;
   font-weight: 600;
+  color: var(--admin-muted);
+  white-space: nowrap;
 }
 
 .column-select,
 .move-category-select {
-  font-size: 11px;
-  padding: 6px 8px;
-  max-width: 108px;
-}
-
-.move-btns {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 2px;
+  min-width: 0;
+  max-width: none;
+  flex: 1;
+  font-size: 12px;
+  padding: 8px 10px;
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius-sm);
   background: var(--admin-surface);
 }
 
+.move-btns {
+  display: flex;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
 .move-btn {
-  min-width: 26px;
-  padding: 5px 7px !important;
-  font-size: 11px;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0 !important;
+  font-size: 13px;
   font-weight: 700;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: var(--admin-radius-sm) !important;
   background: var(--admin-surface) !important;
   color: var(--admin-text) !important;
-  border: none !important;
 }
 
 .move-btn:disabled {
-  opacity: 0.22;
+  opacity: 0.25;
 }
 
 .struct-row {
   display: grid;
-  grid-template-columns: 76px 1fr 68px 32px 100px;
-  gap: 6px;
-  margin-bottom: 6px;
-  align-items: start;
-  padding: 6px;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius-sm);
-  transition: background-color var(--transition-fast);
+  background: var(--admin-surface-muted);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .struct-row:hover {
-    background: rgba(255, 255, 255, 0.7);
+    border-color: #bbb;
+    background: var(--admin-surface);
   }
 }
 
-.struct-row-spacer {
-  grid-template-columns: 76px 1fr 100px;
+.struct-row-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 76px;
+  gap: 8px;
+  align-items: start;
 }
 
-.row-controls {
+.struct-row-toolbar {
   display: flex;
-  align-items: flex-start;
-  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--admin-border);
+}
+
+.struct-row-spacer .struct-row-fields {
+  grid-template-columns: 1fr;
+}
+
+.struct-row-spacer .spacer-label {
+  padding: 8px 10px;
+  border: 1px dashed var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-surface);
+  color: var(--admin-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.struct-row textarea.name-input,
+.struct-row input.price-input {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-surface);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.struct-row textarea.name-input {
+  min-height: 38px;
+  resize: none;
+  overflow: hidden;
+  field-sizing: content;
+}
+
+.struct-row textarea.name-input:focus,
+.struct-row input.price-input:focus {
+  outline: none;
+  border-color: var(--admin-border-strong);
+}
+
+.struct-row input.price-input {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.struct-row input.price-input:disabled {
+  opacity: 0.45;
+  background: var(--admin-surface-muted);
+}
+
+.struct-row .remove-btn,
+.struct-row .note-toggle {
+  min-height: 32px;
+  padding: 6px 10px !important;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .struct-row .remove-btn {
-  min-width: 28px;
-  padding: 6px !important;
-  font-size: 14px;
-  line-height: 1;
+  color: var(--admin-error-text) !important;
+  border-color: #e8c4c2 !important;
 }
 
-.struct-row .note-toggle {
-  padding: 6px !important;
-  font-size: 11px;
-  font-weight: 700;
+@media (hover: hover) and (pointer: fine) {
+  .struct-row .remove-btn:hover:not(:disabled) {
+    background: var(--admin-error-bg) !important;
+    border-color: #e8c4c2 !important;
+    color: var(--admin-error-text) !important;
+  }
 }
 
 .struct-row .note-toggle.is-active {
@@ -520,22 +603,23 @@ textarea {
   border-color: var(--admin-border-strong) !important;
 }
 
-.struct-row textarea.name-input {
-  min-height: 2.6em;
-  padding: 8px 10px;
+.struct-row .move-category-select {
+  flex: 1;
+  min-width: 140px;
 }
 
-.spacer-label {
-  align-self: center;
-  color: var(--admin-muted);
-  font-size: 12px;
+.toolbar-spacer {
+  flex: 1;
+  min-width: 8px;
 }
 
 .row-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--admin-border);
 }
 
 .add-row-btn {

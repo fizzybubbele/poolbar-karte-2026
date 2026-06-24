@@ -206,18 +206,27 @@ function renderStructuredEditor() {
     const tools = document.createElement('div');
     tools.className = 'section-tools';
 
+    const moveGroup = document.createElement('div');
+    moveGroup.className = 'section-tool-group';
     const moveLabel = document.createElement('span');
-    moveLabel.className = 'move-label';
-    moveLabel.textContent = 'Kat.';
-    tools.appendChild(moveLabel);
-
-    tools.appendChild(createMoveButtons({
+    moveLabel.className = 'tool-group-label';
+    moveLabel.textContent = 'Reihenfolge';
+    moveGroup.appendChild(moveLabel);
+    moveGroup.appendChild(createMoveButtons({
       canUp: sectionIndex > 0,
       canDown: sectionIndex < currentMenu.sections.length - 1,
       onUp: () => pushState(moveSection(currentMenu, sectionIndex, sectionIndex - 1)),
       onDown: () => pushState(moveSection(currentMenu, sectionIndex, sectionIndex + 1)),
     }));
+    tools.appendChild(moveGroup);
 
+    const colGroup = document.createElement('div');
+    colGroup.className = 'section-tool-group';
+    colGroup.style.flex = '1';
+    colGroup.style.minWidth = '160px';
+    const colLabel = document.createElement('span');
+    colLabel.className = 'tool-group-label';
+    colLabel.textContent = 'Spalte';
     const colSelect = document.createElement('select');
     colSelect.className = 'column-select';
     colSelect.title = 'Spalte auf der Karte';
@@ -226,7 +235,9 @@ function renderStructuredEditor() {
     colSelect.addEventListener('change', () => {
       pushState(updateSection(currentMenu, sectionIndex, { column: /** @type {'left'|'right'} */ (colSelect.value) }));
     });
-    tools.appendChild(colSelect);
+    colGroup.appendChild(colLabel);
+    colGroup.appendChild(colSelect);
+    tools.appendChild(colGroup);
     head.appendChild(tools);
     block.appendChild(head);
 
@@ -234,9 +245,13 @@ function renderStructuredEditor() {
       const row = document.createElement('div');
       row.className = 'struct-row' + (item.spacer ? ' struct-row-spacer' : '');
 
-      const controls = document.createElement('div');
-      controls.className = 'row-controls';
-      controls.appendChild(createMoveButtons({
+      const fields = document.createElement('div');
+      fields.className = 'struct-row-fields';
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'struct-row-toolbar';
+
+      toolbar.appendChild(createMoveButtons({
         canUp: index > 0,
         canDown: index < section.items.length - 1,
         onUp: () => pushState(moveItem(currentMenu, sectionIndex, index, sectionIndex, index - 1)),
@@ -245,48 +260,61 @@ function renderStructuredEditor() {
 
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.className = 'btn btn-ghost btn-icon remove-btn';
-      remove.textContent = '×';
-      remove.title = 'Entfernen';
+      remove.className = 'btn btn-ghost btn-sm remove-btn';
+      remove.textContent = 'Entfernen';
+      remove.title = 'Zeile löschen';
       remove.addEventListener('click', () => {
         pushState(removeItemAt(currentMenu, section.title, index));
       });
-      controls.appendChild(remove);
-      row.appendChild(controls);
+      toolbar.appendChild(remove);
 
       if (item.spacer) {
         const label = document.createElement('span');
         label.className = 'spacer-label';
         label.textContent = 'Leerzeile';
-        row.appendChild(label);
-        row.appendChild(createCategoryMoveSelect(sectionIndex, index));
+        fields.appendChild(label);
+        row.appendChild(fields);
+
+        const spacerFlex = document.createElement('span');
+        spacerFlex.className = 'toolbar-spacer';
+        toolbar.appendChild(spacerFlex);
+        toolbar.appendChild(createCategoryMoveSelect(sectionIndex, index));
+        row.appendChild(toolbar);
         block.appendChild(row);
         return;
       }
 
       const name = document.createElement('textarea');
       name.className = 'name-input';
-      name.rows = 2;
+      name.rows = 1;
       name.value = item.name;
-      name.placeholder = 'Name (Enter = Umbruch)';
+      name.placeholder = 'Getränkename';
+      name.setAttribute('aria-label', 'Getränkename');
       name.addEventListener('change', () => {
         pushState(updateItem(currentMenu, section.title, index, { name: name.value }));
       });
+      bindAutoResize(name);
 
       const price = document.createElement('input');
       price.value = item.price || '';
-      price.placeholder = 'Preis';
+      price.placeholder = '€';
       price.className = 'price-input';
+      price.setAttribute('aria-label', 'Preis');
+      price.inputMode = 'decimal';
       price.disabled = !!item.note;
       price.addEventListener('change', () => {
         pushState(updateItem(currentMenu, section.title, index, { price: price.value }));
       });
 
+      fields.appendChild(name);
+      fields.appendChild(price);
+      row.appendChild(fields);
+
       const noteBtn = document.createElement('button');
       noteBtn.type = 'button';
-      noteBtn.className = 'btn btn-ghost btn-icon note-toggle' + (item.note ? ' is-active' : '');
-      noteBtn.textContent = 'H';
-      noteBtn.title = 'Hinweiszeile (klein, ohne Preis)';
+      noteBtn.className = 'btn btn-ghost btn-sm note-toggle' + (item.note ? ' is-active' : '');
+      noteBtn.textContent = 'Hinweis';
+      noteBtn.title = 'Als Hinweiszeile (klein, ohne Preis)';
       noteBtn.addEventListener('click', () => {
         const nextNote = !item.note;
         pushState(updateItem(currentMenu, section.title, index, {
@@ -294,11 +322,13 @@ function renderStructuredEditor() {
           price: nextNote ? '' : item.price || '0,00',
         }));
       });
+      toolbar.appendChild(noteBtn);
 
-      row.appendChild(name);
-      row.appendChild(price);
-      row.appendChild(noteBtn);
-      row.appendChild(createCategoryMoveSelect(sectionIndex, index));
+      const toolbarFlex = document.createElement('span');
+      toolbarFlex.className = 'toolbar-spacer';
+      toolbar.appendChild(toolbarFlex);
+      toolbar.appendChild(createCategoryMoveSelect(sectionIndex, index));
+      row.appendChild(toolbar);
       block.appendChild(row);
     });
 
@@ -681,6 +711,15 @@ function setStatus(msg, isError = false) {
   statusBar.classList.toggle('is-error', isError);
 }
 
+function bindAutoResize(textarea) {
+  const resize = () => {
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
+  textarea.addEventListener('input', resize);
+  requestAnimationFrame(resize);
+}
+
 function createMoveButtons(opts) {
   const wrap = document.createElement('div');
   wrap.className = 'move-btns';
@@ -717,7 +756,7 @@ function createCategoryMoveSelect(sectionIndex, itemIndex) {
 
   const placeholder = document.createElement('option');
   placeholder.value = '';
-  placeholder.textContent = '→ Kat.';
+  placeholder.textContent = 'In Kategorie verschieben…';
   select.appendChild(placeholder);
 
   if (!currentMenu) return select;
