@@ -242,14 +242,14 @@
 .editor-panel {
   display: flex;
   flex-direction: column;
-  min-height: calc(100dvh - var(--admin-header-height));
+  min-height: auto;
   border-right: 1px solid var(--admin-border);
   background: var(--admin-surface);
 }
 
 .panel-scroll {
-  flex: 1;
-  overflow: auto;
+  flex: none;
+  overflow: visible;
   padding: 16px;
 }
 
@@ -742,6 +742,9 @@ textarea {
 
 .status-bar {
   flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 9;
   min-height: 44px;
   padding: 12px 16px;
   font-size: 12px;
@@ -771,10 +774,8 @@ textarea {
   position: sticky;
   top: var(--admin-header-height);
   align-self: start;
-  max-height: calc(100dvh - var(--admin-header-height));
   padding: 16px 20px 24px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: visible;
   background: var(--admin-bg);
 }
 
@@ -894,6 +895,7 @@ textarea {
     z-index: 8;
     width: 100%;
     max-height: var(--admin-preview-height);
+    overflow: hidden;
     padding:
       10px
       max(12px, env(safe-area-inset-right))
@@ -922,12 +924,17 @@ textarea {
   .preview-viewport {
     display: flex;
     justify-content: center;
+    align-items: center;
+    max-height: calc(var(--admin-preview-height) - 88px);
     padding: 0;
+    overflow: hidden;
   }
 
   .preview-viewport .a4-sheet {
     width: min(100%, calc(100vw - 24px));
     max-width: none;
+    max-height: 100%;
+    height: auto;
   }
 
   .status-bar {

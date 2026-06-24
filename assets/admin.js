@@ -57,10 +57,23 @@ const clearPatBtn = document.getElementById('clear-pat-btn');
 const pdfPreviewBtn = document.getElementById('pdf-preview-btn');
 const pdfLiveLink = document.getElementById('pdf-live-link');
 const statusBar = document.getElementById('status-bar');
+const previewPanel = document.querySelector('.preview-panel');
 
 init();
 
+function initPreviewScrollPassthrough() {
+  if (!previewPanel) return;
+  previewPanel.addEventListener('wheel', (e) => {
+    if (e.ctrlKey) return;
+    const root = document.scrollingElement || document.documentElement;
+    root.scrollTop += e.deltaY;
+    root.scrollLeft += e.deltaX;
+    e.preventDefault();
+  }, { passive: false });
+}
+
 function init() {
+  initPreviewScrollPassthrough();
   const savedPat = sessionStorage.getItem(PAT_KEY);
   if (savedPat && patInput) patInput.value = '••••••••';
 
