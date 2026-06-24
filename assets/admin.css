@@ -845,10 +845,63 @@ textarea {
   border: 1px solid var(--admin-border);
 }
 
+/* ——— Mobile view toggle ——— */
+
+.mobile-view-toggle {
+  display: none;
+}
+
 @media (max-width: 960px) {
   :root {
     --admin-header-height: 108px;
-    --admin-preview-height: min(42dvh, 360px);
+    --admin-mobile-toggle-height: 60px;
+  }
+
+  .mobile-view-toggle {
+    display: flex;
+    gap: 8px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    padding:
+      8px
+      max(12px, env(safe-area-inset-right))
+      max(8px, env(safe-area-inset-bottom))
+      max(12px, env(safe-area-inset-left));
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid var(--admin-border);
+    backdrop-filter: blur(10px);
+  }
+
+  .mobile-view-btn {
+    flex: 1;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    background: var(--admin-surface-muted);
+    color: var(--admin-text);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      transform var(--transition-fast),
+      background-color var(--transition-fast),
+      color var(--transition-fast),
+      border-color var(--transition-fast);
+  }
+
+  .mobile-view-btn.is-active {
+    background: var(--admin-border-strong);
+    border-color: var(--admin-border-strong);
+    color: #fff;
+  }
+
+  .mobile-view-btn:active {
+    transform: scale(0.98);
   }
 
   .admin-body {
@@ -872,16 +925,23 @@ textarea {
   }
 
   .editor-grid {
-    display: flex;
-    flex-direction: column;
+    display: block;
     min-height: auto;
   }
 
+  .editor-grid.is-mobile-edit .preview-panel {
+    display: none;
+  }
+
+  .editor-grid.is-mobile-preview .editor-panel {
+    display: none;
+  }
+
   .editor-panel {
-    order: 2;
     min-height: auto;
     border-right: none;
     border-bottom: none;
+    padding-bottom: calc(var(--admin-mobile-toggle-height) + env(safe-area-inset-bottom));
   }
 
   .panel-scroll {
@@ -889,20 +949,18 @@ textarea {
   }
 
   .preview-panel {
-    order: 1;
-    position: sticky;
-    top: var(--admin-header-height);
-    z-index: 8;
+    position: static;
     width: 100%;
-    max-height: var(--admin-preview-height);
-    overflow: hidden;
+    min-height: calc(100dvh - var(--admin-header-height) - var(--admin-mobile-toggle-height));
+    max-height: none;
+    overflow: visible;
     padding:
-      10px
-      max(12px, env(safe-area-inset-right))
       12px
+      max(12px, env(safe-area-inset-right))
+      calc(var(--admin-mobile-toggle-height) + 12px + env(safe-area-inset-bottom))
       max(12px, env(safe-area-inset-left));
-    border-bottom: 1px solid var(--admin-border);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    border-bottom: none;
+    box-shadow: none;
   }
 
   .preview-toolbar {
@@ -925,27 +983,27 @@ textarea {
     display: flex;
     justify-content: center;
     align-items: center;
-    max-height: calc(var(--admin-preview-height) - 88px);
+    min-height: calc(100dvh - var(--admin-header-height) - var(--admin-mobile-toggle-height) - 120px);
+    max-height: none;
     padding: 0;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .preview-viewport .a4-sheet {
     width: min(100%, calc(100vw - 24px));
     max-width: none;
-    max-height: 100%;
+    max-height: calc(100dvh - var(--admin-header-height) - var(--admin-mobile-toggle-height) - 140px);
     height: auto;
   }
 
   .status-bar {
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    margin-bottom: 0;
   }
 }
 
 @media (max-width: 640px) {
   :root {
     --admin-header-height: 124px;
-    --admin-preview-height: min(38dvh, 320px);
   }
 
   .version-badge {

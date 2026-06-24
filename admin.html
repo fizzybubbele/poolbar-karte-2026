@@ -5,8 +5,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Poolbar Karte — Admin</title>
-  <link rel="stylesheet" href="assets/karte.css?v=18">
-  <link rel="stylesheet" href="assets/admin.css?v=18">
+  <link rel="stylesheet" href="assets/karte.css?v=19">
+  <link rel="stylesheet" href="assets/admin.css?v=19">
 </head>
 <body class="admin-body">
   <div id="login-view" class="login-view is-active">
@@ -36,7 +36,12 @@
       </div>
     </header>
 
-    <div class="editor-grid">
+    <nav class="mobile-view-toggle" aria-label="Ansicht wechseln">
+      <button type="button" id="mobile-view-edit" class="mobile-view-btn is-active" aria-pressed="true">Bearbeiten</button>
+      <button type="button" id="mobile-view-preview" class="mobile-view-btn" aria-pressed="false">Vorschau</button>
+    </nav>
+
+    <div class="editor-grid is-mobile-edit">
       <aside class="editor-panel">
         <div class="panel-scroll">
           <section class="panel-block panel-block-primary">
@@ -141,6 +146,6 @@
       e.preventDefault();
     });
   </script>
-  <script type="module" src="assets/admin.js?v=18"></script>
+  <script type="module" src="assets/admin.js?v=19"></script>
 </body>
 </html>

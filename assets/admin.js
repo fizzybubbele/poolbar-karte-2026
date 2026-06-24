@@ -1,4 +1,4 @@
-import { renderKarte, loadMenu, cloneMenu } from './karte.js';
+import { renderKarte, loadMenu, cloneMenu, fitKartePreview } from './karte.js';
 import {
   applyFreetext,
   removeItemAt,
@@ -21,6 +21,8 @@ const AUTH_KEY = 'poolbar-admin-auth';
 const PAT_KEY = 'poolbar-github-pat';
 const UNDO_KEY = 'poolbar-admin-undo';
 const PRINT_MENU_KEY = 'poolbar-print-menu';
+const MOBILE_VIEW_KEY = 'poolbar-admin-mobile-view';
+const MOBILE_MQ = '(max-width: 960px)';
 
 /** @type {import('./karte.js').MenuData | null} */
 let currentMenu = null;
@@ -58,12 +60,16 @@ const pdfPreviewBtn = document.getElementById('pdf-preview-btn');
 const pdfLiveLink = document.getElementById('pdf-live-link');
 const statusBar = document.getElementById('status-bar');
 const previewPanel = document.querySelector('.preview-panel');
+const editorGrid = document.querySelector('.editor-grid');
+const mobileViewEdit = document.getElementById('mobile-view-edit');
+const mobileViewPreview = document.getElementById('mobile-view-preview');
 
 init();
 
 function initPreviewScrollPassthrough() {
   if (!previewPanel) return;
   previewPanel.addEventListener('wheel', (e) => {
+    if (window.matchMedia(MOBILE_MQ).matches) return;
     if (e.ctrlKey) return;
     const root = document.scrollingElement || document.documentElement;
     root.scrollTop += e.deltaY;
@@ -72,8 +78,61 @@ function initPreviewScrollPassthrough() {
   }, { passive: false });
 }
 
+function setMobileView(mode) {
+  if (!editorGrid || !mobileViewEdit || !mobileViewPreview) return;
+  const isEdit = mode !== 'preview';
+  const isMobile = window.matchMedia(MOBILE_MQ).matches;
+
+  mobileViewEdit.classList.toggle('is-active', isEdit);
+  mobileViewPreview.classList.toggle('is-active', !isEdit);
+  mobileViewEdit.setAttribute('aria-pressed', isEdit ? 'true' : 'false');
+  mobileViewPreview.setAttribute('aria-pressed', isEdit ? 'false' : 'true');
+
+  if (isMobile) {
+    editorGrid.classList.toggle('is-mobile-edit', isEdit);
+    editorGrid.classList.toggle('is-mobile-preview', !isEdit);
+    try {
+      sessionStorage.setItem(MOBILE_VIEW_KEY, isEdit ? 'edit' : 'preview');
+    } catch {
+      /* ignore */
+    }
+    if (!isEdit) refitPreview();
+  } else {
+    editorGrid.classList.remove('is-mobile-edit', 'is-mobile-preview');
+  }
+}
+
+function refitPreview() {
+  const sheet = previewRoot?.closest('.a4-sheet');
+  if (sheet) {
+    requestAnimationFrame(() => {
+      document.fonts.ready.then(() => fitKartePreview(sheet));
+    });
+  }
+}
+
+function initMobileViewToggle() {
+  if (!editorGrid || !mobileViewEdit || !mobileViewPreview) return;
+  const mq = window.matchMedia(MOBILE_MQ);
+  const saved = sessionStorage.getItem(MOBILE_VIEW_KEY);
+  setMobileView(saved === 'preview' ? 'preview' : 'edit');
+
+  mobileViewEdit.addEventListener('click', () => setMobileView('edit'));
+  mobileViewPreview.addEventListener('click', () => setMobileView('preview'));
+
+  mq.addEventListener('change', () => {
+    if (!mq.matches) {
+      editorGrid.classList.remove('is-mobile-edit', 'is-mobile-preview');
+      return;
+    }
+    const mode = sessionStorage.getItem(MOBILE_VIEW_KEY);
+    setMobileView(mode === 'preview' ? 'preview' : 'edit');
+  });
+}
+
 function init() {
   initPreviewScrollPassthrough();
+  initMobileViewToggle();
   const savedPat = sessionStorage.getItem(PAT_KEY);
   if (savedPat && patInput) patInput.value = '••••••••';
 
@@ -172,6 +231,9 @@ function renderAll() {
   updateUndoButtons();
   updateVersionBadge();
   renderVersionCurrent();
+  if (window.matchMedia(MOBILE_MQ).matches && editorGrid?.classList.contains('is-mobile-preview')) {
+    refitPreview();
+  }
 }
 
 function renderFooterEditor() {
