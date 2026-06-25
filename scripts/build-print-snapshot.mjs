@@ -18,7 +18,7 @@ const html = `<!DOCTYPE html>
   <style>
     body { background: #fff; margin: 0; }
     .a4-viewport { padding: 0; min-height: auto; }
-    .a4-sheet { width: 210mm; height: 297mm; box-shadow: none; aspect-ratio: auto; display: block; }
+    .a4-sheet { width: 297mm; height: 210mm; box-shadow: none; aspect-ratio: auto; display: block; }
     .a4-page { transform: none !important; }
   </style>
 </head>

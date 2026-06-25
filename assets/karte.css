@@ -2,9 +2,15 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+:root {
+  --page-width: 297mm;
+  --page-height: 210mm;
+  --page-margin: 10mm;
+}
+
 @page {
-  size: 210mm 297mm;
-  margin: 10mm;
+  size: var(--page-width) var(--page-height);
+  margin: var(--page-margin);
 }
 
 html {
@@ -27,8 +33,8 @@ body {
 }
 
 .a4-sheet {
-  aspect-ratio: 210 / 297;
-  width: min(210mm, calc(100vw - 32px), calc((100dvh - 120px) * 210 / 297));
+  aspect-ratio: 297 / 210;
+  width: min(var(--page-width), calc(100vw - 32px), calc((100dvh - 120px) * 297 / 210));
   background: #fff;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
   box-sizing: border-box;
@@ -39,8 +45,8 @@ body {
 }
 
 .a4-page {
-  width: 210mm;
-  height: 297mm;
+  width: var(--page-width);
+  height: var(--page-height);
   flex-shrink: 0;
   transform-origin: center center;
 }
@@ -48,7 +54,7 @@ body {
 .a4-inner {
   width: 100%;
   height: 100%;
-  padding: 10mm;
+  padding: var(--page-margin);
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -81,7 +87,14 @@ body {
   gap: 0 32px;
 }
 
-.section { margin-bottom: 17px; }
+.zwei-spalten > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 20px;
+  align-content: start;
+}
+
+.section { margin-bottom: 14px; }
 
 .section-title {
   font-size: 10px;
@@ -124,7 +137,7 @@ body {
   font-size: 11px;
   color: #666;
   text-align: center;
-  max-width: 210mm;
+  max-width: var(--page-width);
 }
 
 .download-bar {
@@ -184,8 +197,8 @@ body {
 
   .a4-page {
     transform: none !important;
-    width: 210mm;
-    height: 297mm;
+    width: var(--page-width);
+    height: var(--page-height);
   }
 
   .a4-inner { overflow: visible; }
