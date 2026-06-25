@@ -18,8 +18,14 @@ const html = `<!DOCTYPE html>
   <style>
     body { background: #fff; margin: 0; }
     .a4-viewport { padding: 0; min-height: auto; }
-    .a4-sheet { width: 297mm; height: 210mm; box-shadow: none; aspect-ratio: auto; display: block; }
+    .a4-sheet,
+    .a4-page {
+      width: 297mm;
+      height: 210mm;
+    }
+    .a4-sheet { box-shadow: none; aspect-ratio: auto; display: block; }
     .a4-page { transform: none !important; }
+    .a4-inner { padding: 10mm; box-sizing: border-box; }
   </style>
 </head>
 <body>

@@ -10,7 +10,7 @@
 
 @page {
   size: var(--page-width) var(--page-height);
-  margin: var(--page-margin);
+  margin: 0;
 }
 
 html {
@@ -180,6 +180,11 @@ body {
 }
 
 @media print {
+  @page {
+    size: var(--page-width) var(--page-height);
+    margin: 0;
+  }
+
   body { background: #fff; }
 
   .a4-viewport {
@@ -189,7 +194,8 @@ body {
   }
 
   .a4-sheet {
-    width: auto;
+    width: var(--page-width);
+    height: var(--page-height);
     box-shadow: none;
     aspect-ratio: auto;
     overflow: visible;
@@ -202,7 +208,11 @@ body {
     height: var(--page-height);
   }
 
-  .a4-inner { overflow: visible; }
+  .a4-inner {
+    padding: var(--page-margin);
+    box-sizing: border-box;
+    overflow: visible;
+  }
 
   .karte { width: 100%; }
 

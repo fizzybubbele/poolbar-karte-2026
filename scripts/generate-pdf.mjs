@@ -48,10 +48,11 @@ try {
   await page.waitForFunction(() => document.body.dataset.ready === '1', { timeout: 60000 });
   await page.pdf({
     path: join(root, 'poolbar_getraenkekarte_2026.pdf'),
-    format: 'A4',
-    landscape: true,
+    width: '297mm',
+    height: '210mm',
     margin: { top: '0', right: '0', bottom: '0', left: '0' },
     printBackground: true,
+    preferCSSPageSize: true,
   });
   await browser.close();
   console.log('PDF erzeugt: poolbar_getraenkekarte_2026.pdf');
