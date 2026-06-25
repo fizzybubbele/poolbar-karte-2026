@@ -34,11 +34,21 @@
       ]
     },
     {
+      "title": "Franz Josef Rauch 0,33",
+      "column": "left",
+      "items": [
+        {
+          "name": "Schwarze Johannisbeere | Rhabarber | Apfelsaft",
+          "price": "4,40"
+        }
+      ]
+    },
+    {
       "title": "Gasteiner 0,33",
       "column": "left",
       "items": [
         {
-          "name": "Infinity Water Himbeere Zitrone | Zitrone (CRO Edition)",
+          "name": "Infinity Water Himbeere Zitrone | Holunder Limette | Zitrone (CRO Edition)",
           "price": "3,90"
         },
         {
@@ -54,16 +64,6 @@
         {
           "name": "Orange | Mango gespr.",
           "price": "4,30"
-        }
-      ]
-    },
-    {
-      "title": "Franz Josef Rauch 0,33",
-      "column": "left",
-      "items": [
-        {
-          "name": "Schwarze Johannisbeere | Rhabarber | Apfelsaft",
-          "price": "4,40"
         }
       ]
     },
@@ -95,7 +95,7 @@
     },
     {
       "title": "Leichte Erfrischung 0,4",
-      "column": "left",
+      "column": "right",
       "items": [
         {
           "name": "Weiß Sauer | Süß",
@@ -112,36 +112,20 @@
         {
           "name": "Switzly Cider 0,33",
           "price": "4,60"
+        },
+        {
+          "name": "IPPAI Lemon Sour レモンサワー",
+          "price": "5,60"
         }
       ]
     },
     {
       "title": "The Organics by Red Bull 0,25",
-      "column": "right",
+      "column": "left",
       "items": [
         {
-          "name": "Simply Cola | Easy Lemon | Ginger Ale | Tonic | Rhabarber | Tonic Water | Fizzy Peach | Purple Berry | Minty Blackberry | Black Orange",
+          "name": "Simply Cola | Easy Lemon | Ginger Ale | Tonic Water | Fizzy Peach | Purple Berry | Minty Blackberry | Black Orange",
           "price": "4,50"
-        }
-      ]
-    },
-    {
-      "title": "Red Bull Energy Drink 0,25",
-      "column": "right",
-      "items": [
-        {
-          "name": "Classic | Zero | Summer Edition | Holunder Limette | Peach Edition",
-          "price": "4,60"
-        }
-      ]
-    },
-    {
-      "title": "Beefeater Gin",
-      "column": "right",
-      "items": [
-        {
-          "name": "Tonic",
-          "price": "7,80"
         }
       ]
     },
@@ -152,6 +136,26 @@
         {
           "name": "Red Bull | Makava | Soda | Skinny Beats | O | Summer Edition | Peach Edition | Lemon",
           "price": "7,80"
+        }
+      ]
+    },
+    {
+      "title": "Beefeater Gin",
+      "column": "right",
+      "items": [
+        {
+          "name": "Tonic | Rhabarber ",
+          "price": "7,80"
+        }
+      ]
+    },
+    {
+      "title": "Red Bull Energy Drink 0,25",
+      "column": "left",
+      "items": [
+        {
+          "name": "Classic | Zero | Summer Edition | Peach Edition",
+          "price": "4,60"
         }
       ]
     },
@@ -214,7 +218,7 @@
       "column": "right",
       "items": [
         {
-          "name": "Parisienne | Lucky Strike Authentic Red | Lucky Strike Classic Red",
+          "name": "Parisienne Jaune | Lucky Strike Authentic Red | Lucky Strike Classic Red",
           "price": "9,00"
         },
         {
