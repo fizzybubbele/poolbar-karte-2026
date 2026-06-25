@@ -525,7 +525,7 @@ async function publishMenu() {
     await validatePat(pat);
     storePat(pat);
     await upsertFile(pat, 'data/menu.json', menuJson, 'Karte aktualisiert');
-    await upsertFile(pat, historyPath, menuJson, `Snapshot ${stamp}`, false);
+    await upsertFile(pat, historyPath, menuJson, `Snapshot ${stamp}`, true);
     await appendHistoryIndex(pat, historyPath, stamp, menuToPublish.meta.updated);
     pushState(menuToPublish);
     setStatus('Veröffentlicht — Deploy läuft auf GitHub (~1–2 Min.)');
@@ -600,7 +600,7 @@ async function appendHistoryIndex(pat, path, stamp, updated) {
   }
   index.unshift({ path, stamp, at: new Date().toISOString(), updated: updated || null });
   index = index.slice(0, 50);
-  await upsertFile(pat, HISTORY_INDEX_URL, JSON.stringify(index, null, 2), 'History-Index aktualisiert', false);
+  await upsertFile(pat, HISTORY_INDEX_URL, JSON.stringify(index, null, 2), 'History-Index aktualisiert');
 }
 
 function formatVersionDate(iso) {
@@ -705,14 +705,17 @@ async function loadHistoryList() {
   }
 }
 
-async function upsertFile(pat, path, content, message, tryUpdateMain = true) {
+async function upsertFile(pat, path, content, message, createOnly = false) {
   let sha;
-  if (tryUpdateMain) {
+  if (!createOnly) {
     try {
       const meta = await githubApi(pat, repoContentsPath(path));
       sha = meta.sha;
-    } catch {
-      sha = undefined;
+    } catch (err) {
+      const msg = String(err.message || '');
+      if (!msg.includes('404') && !msg.toLowerCase().includes('not found')) {
+        throw err;
+      }
     }
   }
   const body = {
@@ -755,6 +758,9 @@ async function githubApi(pat, path, method = 'GET', body) {
     }
     if (res.status === 403) {
       throw new Error('Kein Schreibrecht — PAT braucht „Contents: Read and write“ für poolbar-karte-2026');
+    }
+    if (msg.includes('sha') && msg.toLowerCase().includes("wasn't supplied")) {
+      throw new Error('GitHub-Update fehlgeschlagen (Datei-Konflikt). Seite neu laden und erneut veröffentlichen.');
     }
     throw new Error(msg);
   }
