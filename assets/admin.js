@@ -514,7 +514,7 @@ async function publishMenu() {
     return;
   }
 
-  const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 16);
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   const historyPath = `data/history/menu-${stamp}.json`;
   const menuToPublish = cloneMenu(currentMenu);
   menuToPublish.meta = { ...menuToPublish.meta, updated: new Date().toISOString().slice(0, 10) };
@@ -525,7 +525,7 @@ async function publishMenu() {
     await validatePat(pat);
     storePat(pat);
     await upsertFile(pat, 'data/menu.json', menuJson, 'Karte aktualisiert');
-    await upsertFile(pat, historyPath, menuJson, `Snapshot ${stamp}`, true);
+    await upsertFile(pat, historyPath, menuJson, `Snapshot ${stamp}`);
     await appendHistoryIndex(pat, historyPath, stamp, menuToPublish.meta.updated);
     pushState(menuToPublish);
     setStatus('Veröffentlicht — Deploy läuft auf GitHub (~1–2 Min.)');
@@ -592,15 +592,20 @@ async function validatePat(pat) {
 
 async function appendHistoryIndex(pat, path, stamp, updated) {
   let index = [];
+  let sha;
   try {
-    const existing = await githubGet(pat, HISTORY_INDEX_URL);
-    index = JSON.parse(existing);
-  } catch {
+    const data = await githubGetFile(pat, HISTORY_INDEX_URL);
+    index = JSON.parse(data.text);
+    sha = data.sha;
+  } catch (err) {
+    if (err.status !== 404 && !String(err.message).includes('404')) {
+      throw err;
+    }
     index = [];
   }
   index.unshift({ path, stamp, at: new Date().toISOString(), updated: updated || null });
   index = index.slice(0, 50);
-  await upsertFile(pat, HISTORY_INDEX_URL, JSON.stringify(index, null, 2), 'History-Index aktualisiert');
+  await upsertFile(pat, HISTORY_INDEX_URL, JSON.stringify(index, null, 2), 'History-Index aktualisiert', sha);
 }
 
 function formatVersionDate(iso) {
@@ -705,16 +710,15 @@ async function loadHistoryList() {
   }
 }
 
-async function upsertFile(pat, path, content, message, createOnly = false) {
-  let sha;
-  if (!createOnly) {
+async function upsertFile(pat, path, content, message, knownSha) {
+  let sha = knownSha;
+  if (!sha) {
     try {
       const meta = await githubApi(pat, repoContentsPath(path));
-      sha = meta.sha;
+      sha = meta?.sha;
     } catch (err) {
-      const msg = String(err.message || '');
-      if (!msg.includes('404') && !msg.toLowerCase().includes('not found')) {
-        throw err;
+      if (err.status !== 404 && !String(err.message).includes('404')) {
+        throw new Error(`${path}: ${err.message}`);
       }
     }
   }
@@ -723,14 +727,26 @@ async function upsertFile(pat, path, content, message, createOnly = false) {
     content: toBase64(content),
   };
   if (sha) body.sha = sha;
-  await githubApi(pat, repoContentsPath(path), 'PUT', body);
+  try {
+    await githubApi(pat, repoContentsPath(path), 'PUT', body);
+  } catch (err) {
+    throw new Error(`${path}: ${err.message}`);
+  }
 }
 
-async function githubGet(pat, path) {
+async function githubGetFile(pat, path) {
   const data = await githubApi(pat, repoContentsPath(path));
   const binary = atob(data.content.replace(/\n/g, ''));
   const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
-  return new TextDecoder().decode(bytes);
+  return {
+    sha: data.sha,
+    text: new TextDecoder().decode(bytes),
+  };
+}
+
+async function githubGet(pat, path) {
+  const data = await githubGetFile(pat, path);
+  return data.text;
 }
 
 /** @param {string} filePath */
@@ -752,6 +768,8 @@ async function githubApi(pat, path, method = 'GET', body) {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     const msg = err.message || `GitHub API ${res.status}`;
+    const error = new Error(msg);
+    error.status = res.status;
     if (res.status === 401) {
       clearPat();
       throw new Error('GitHub-Token ungültig oder abgelaufen. Neues PAT erstellen, speichern, erneut versuchen.');
@@ -760,9 +778,9 @@ async function githubApi(pat, path, method = 'GET', body) {
       throw new Error('Kein Schreibrecht — PAT braucht „Contents: Read and write“ für poolbar-karte-2026');
     }
     if (msg.includes('sha') && msg.toLowerCase().includes("wasn't supplied")) {
-      throw new Error('GitHub-Update fehlgeschlagen (Datei-Konflikt). Seite neu laden und erneut veröffentlichen.');
+      throw new Error('GitHub-Update fehlgeschlagen — Datei existiert bereits, sha fehlt. Seite neu laden und erneut versuchen.');
     }
-    throw new Error(msg);
+    throw error;
   }
   return res.json();
 }
