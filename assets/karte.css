@@ -88,13 +88,14 @@ body {
 }
 
 .zwei-spalten > div {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 20px;
-  align-content: start;
+  column-count: 2;
+  column-gap: 20px;
 }
 
-.section { margin-bottom: 14px; }
+.section {
+  break-inside: avoid;
+  margin-bottom: 14px;
+}
 
 .section-title {
   font-size: 10px;
