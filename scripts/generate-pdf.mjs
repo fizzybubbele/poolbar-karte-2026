@@ -19,6 +19,8 @@ const mime = {
   '.json': 'application/json; charset=utf-8',
   '.pdf': 'application/pdf',
   '.otf': 'font/otf',
+  '.woff2': 'font/woff2',
+  '.ttf': 'font/ttf',
 };
 
 function serveStatic() {

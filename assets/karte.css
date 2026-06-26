@@ -1,4 +1,5 @@
 @import url('font.css');
+@import url('font-jp.css');
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -18,7 +19,7 @@ html {
 }
 
 body {
-  font-family: 'ABCCamera', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'ABCCamera', 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #000;
   background: #ececec;
   margin: 0;

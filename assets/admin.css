@@ -813,7 +813,7 @@ textarea {
 .preview-viewport .a4-inner,
 .preview-viewport .karte,
 .preview-viewport .karte * {
-  font-family: 'ABCCamera', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'ABCCamera', 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 /* ——— Utilities ——— */
