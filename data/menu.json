@@ -24,12 +24,26 @@
           "price": "4,70"
         },
         {
-          "name": "Alkoholfrei",
-          "price": "4,70"
-        },
-        {
           "name": "Weizen",
           "price": "5,10"
+        },
+        {
+          "name": "Alkoholfrei",
+          "price": "4,70"
+        }
+      ]
+    },
+    {
+      "title": "Gasteiner 0,33",
+      "column": "left",
+      "items": [
+        {
+          "name": "Infinity Water Himbeere Zitrone | Zitrone (CRO Edition) | \nHolunder Limette",
+          "price": "3,90"
+        },
+        {
+          "name": "Mineralwasser Still | Laut",
+          "price": "2,80"
         }
       ]
     },
@@ -44,25 +58,11 @@
       ]
     },
     {
-      "title": "Gasteiner 0,33",
-      "column": "left",
-      "items": [
-        {
-          "name": "Infinity Water Himbeere Zitrone | Holunder Limette | Zitrone (CRO Edition)",
-          "price": "3,90"
-        },
-        {
-          "name": "Mineralwasser Still | Laut",
-          "price": "2,80"
-        }
-      ]
-    },
-    {
       "title": "Rauch Happy Day 0,4",
       "column": "left",
       "items": [
         {
-          "name": "Orange | Mango gespr.",
+          "name": "Orange gespritzt |\nMango gespritzt",
           "price": "4,30"
         }
       ]
@@ -124,7 +124,7 @@
       "column": "left",
       "items": [
         {
-          "name": "Simply Cola | Easy Lemon | Ginger Ale | Tonic Water | Fizzy Peach | Purple Berry | Minty Blackberry | Black Orange",
+          "name": "Simply Cola | Easy Lemon | \nGinger Ale | Tonic Water | \nFizzy Peach | Purple Berry | \nMinty Blackberry | Black Orange",
           "price": "4,50"
         }
       ]
@@ -134,7 +134,7 @@
       "column": "right",
       "items": [
         {
-          "name": "Red Bull | Makava | Soda | Skinny Beats | O | Summer Edition | Peach Edition | Lemon",
+          "name": "Red Bull | Makava | Soda | \nSkinny Beats | O | Summer Edition | \nPeach Edition | Lemon",
           "price": "7,80"
         }
       ]
@@ -178,7 +178,7 @@
       "column": "right",
       "items": [
         {
-          "name": "Soda | Cola | Energy | Lemon",
+          "name": "Soda | Simply Cola | Red Bull | Lemon",
           "price": "7,80"
         }
       ]
@@ -188,7 +188,7 @@
       "column": "right",
       "items": [
         {
-          "name": "Cola | O",
+          "name": "Simply Cola | O",
           "price": "7,80"
         }
       ]
@@ -208,7 +208,7 @@
       "column": "right",
       "items": [
         {
-          "name": "Berliner Luft | Vodka | Tequila | Ramazotti | Limoncello",
+          "name": "Berliner Luft | Vodka | Tequila | Ramazzotti | Limoncello",
           "price": "3,50"
         }
       ]
@@ -218,11 +218,11 @@
       "column": "right",
       "items": [
         {
-          "name": "Parisienne Jaune | Lucky Strike Authentic Red | Lucky Strike Classic Red",
+          "name": "Parisienne Jaune | \nLucky Strike Authentic Red | \nLucky Strike Classic Red",
           "price": "9,00"
         },
         {
-          "name": "Velo 4 freezing peppermint | Velo 4 tropical Mango | Velo 6 freezing peppermint",
+          "name": "Velo 4 freezing peppermint | \nVelo 4 tropical Mango | \nVelo 6 freezing peppermint",
           "price": "9,50"
         }
       ]
